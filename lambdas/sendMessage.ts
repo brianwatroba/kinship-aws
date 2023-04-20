@@ -1,21 +1,14 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyResult, SQSEvent } from 'aws-lambda';
 
-/**
- *
- * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
- * @param {Object} event - API Gateway Lambda Proxy Input Format
- *
- * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
- * @returns {Object} object - API Gateway Lambda Proxy Output Format
- *
- */
-
-export const sendMessageHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+import { getSsmParams } from '../utils/getSsmParams';
+export const sendMessageHandler = async (event: SQSEvent): Promise<APIGatewayProxyResult> => {
     try {
+        const res = JSON.stringify(await getSsmParams('/prod/twilio'));
+        console.log(res);
         return {
             statusCode: 200,
             body: JSON.stringify({
-                message: 'sending message',
+                message: res,
             }),
         };
     } catch (err) {

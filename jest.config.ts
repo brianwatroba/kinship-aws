@@ -9,7 +9,7 @@ export default {
     },
     clearMocks: true,
     collectCoverage: true,
-    coverageDirectory: 'coverage',
+    coverageDirectory: './__tests__/coverage',
     coverageProvider: 'v8',
-    testMatch: ['**/tests/unit/*.test.ts'],
+    testMatch: ['/**/*/*.test.ts'],
 };
