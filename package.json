@@ -6,7 +6,8 @@
     "author": "Brian Watroba",
     "license": "MIT",
     "scripts": {
-        "unit": "jest --config=jest.config.ts",
+        "unit": "jest --config=jest.config.ts --env-vars env.test.json",
+        "deploy": "sam build --env-vars env.prod.json && sam deploy --env-vars env.prod.json",
         "lint": "eslint '*.ts' --quiet --fix",
         "compile": "tsc",
         "test": "npm run compile && npm run unit"
