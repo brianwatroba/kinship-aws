@@ -1,29 +1,28 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-
-/**
- *
- * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
- * @param {Object} event - API Gateway Lambda Proxy Input Format
- *
- * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
- * @returns {Object} object - API Gateway Lambda Proxy Output Format
- *
- */
+import { parseUrlEncoded } from '../utils/parseUrlEncoded';
 
 export const receiveMessageHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
+        // verify message integrity
+
+        const { body } = event;
+        if (body === null || body === undefined) throw new Error('No body in event');
+        const { From: phoneNumber, Body: text } = parseUrlEncoded(body);
+
+        // do something with the message
+
         return {
             statusCode: 200,
             body: JSON.stringify({
-                message: 'handling response',
+                message: `Success!`,
             }),
         };
-    } catch (err) {
-        console.log(err);
+    } catch (err: any) {
+        console.log(err.message);
         return {
             statusCode: 500,
             body: JSON.stringify({
-                message: 'some error happened',
+                message: err.message,
             }),
         };
     }
