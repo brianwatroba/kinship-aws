@@ -60,12 +60,12 @@ Resources:
         Properties:
             TableName: 'Users'
             AttributeDefinitions:
-                - AttributeName: 'userId'
+                - AttributeName: 'phoneNumber'
                   AttributeType: 'S'
                 - AttributeName: 'familyId'
                   AttributeType: 'S'
             KeySchema:
-                - AttributeName: 'userId'
+                - AttributeName: 'phoneNumber'
                   KeyType: 'HASH'
             BillingMode: 'PAY_PER_REQUEST'
             GlobalSecondaryIndexes:
@@ -73,7 +73,7 @@ Resources:
                   KeySchema:
                       - AttributeName: 'familyId'
                         KeyType: 'HASH'
-                      - AttributeName: 'userId'
+                      - AttributeName: 'phoneNumber'
                         KeyType: 'RANGE'
                   Projection:
                       ProjectionType: 'ALL'
