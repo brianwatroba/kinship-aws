@@ -1,48 +1,41 @@
 import { APIGatewayProxyResult, SQSEvent } from 'aws-lambda';
-import { Parameter } from 'aws-sdk/clients/ssm';
-import { getSsmParams } from '../utils/getSsmParams';
+import { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } from '../config/constants';
 import { Twilio } from 'twilio';
-
-function extractText(str: string): string {
-    const pattern = /(?<=\/prod\/twilio\/).*/;
-    const match = str.match(pattern);
-    return match ? match[0] : 'key';
-}
 
 export const sendMessageHandler = async (event: SQSEvent): Promise<APIGatewayProxyResult> => {
     try {
-        const twilioVals = await getSsmParams('/prod/twilio');
-        const vals: { [key: string]: string } = {};
-        twilioVals.forEach((val: Parameter) => {
-            if (!val.Name || !val.Value) return;
-            vals[extractText(val.Name)] = val.Value;
-        });
+        const twilio = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
-        const twilio = new Twilio(vals.accountSid, vals.authToken);
-        const text = 'testing - you cannot respond yet';
+        if (event.Records.length > 1) throw new Error('Too many records in SQS event! Should only be one');
 
-        const myNumber = '+18103330792';
+        const record = event.Records[0];
+        const { text, to, from } = JSON.parse(record.body);
 
         const res = await twilio.messages.create({
             body: text,
-            from: '+18449320927',
-            to: myNumber,
+            from,
+            to,
         });
 
-        console.log(res);
+        const { status } = res;
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify({
-                message: res,
-            }),
-        };
-    } catch (err) {
-        console.log(err);
+        const sentSuccess = status === 'queued' || status === 'sending' || status === 'sent';
+        if (sentSuccess) {
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    message: `Success! Status: ${status}`,
+                }),
+            };
+        }
+
+        throw new Error(`Failed to send message. Status: ${status}`);
+    } catch (err: any) {
+        console.log(err.message);
         return {
             statusCode: 500,
             body: JSON.stringify({
-                message: 'some error happened',
+                message: err.message,
             }),
         };
     }

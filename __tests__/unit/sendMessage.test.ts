@@ -1,12 +1,11 @@
-import { sqsEvent } from '../fixtures/events';
+import { sendMessageSqsEvents } from '../fixtures/events';
 import { sendMessageHandler } from '../../lambdas/sendMessage';
-import { expect, describe, it } from '@jest/globals';
+// import { expect, describe, it } from '@jest/globals';
 
 describe('SQS event tests', () => {
-    it('should return a status code of 200 when invoked by SQS', async () => {
-        const mockEvent = sqsEvent;
-
-        const result = await sendMessageHandler(mockEvent);
+    it('should return 200 when invoked by SINGLE SQS event', async () => {
+        const event = sendMessageSqsEvents.valid;
+        const result = await sendMessageHandler(event);
         expect(result.statusCode).toEqual(200);
     });
 });
