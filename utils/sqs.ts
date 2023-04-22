@@ -9,7 +9,11 @@ export const sendMessage = async (params: { queueUrl: string; payload: object })
     };
     const command = new SendMessageCommand(messageParams);
 
+    console.log('in sendMessage');
+
     const res = await sqsClient.send(command);
+
+    console.log('message res', res);
 
     if (!res.MessageId) throw new Error('Failed to send message');
 

@@ -44,9 +44,9 @@ Resources:
             Runtime: nodejs18.x
             Policies:
                 - DynamoDBReadPolicy:
-                      TableName: !Ref UsersTable
+                      TableName: Users
                 - SQSSendMessagePolicy:
-                      QueueName: !Ref SendMessageQueue
+                      QueueName: send-message-queue
             Architectures:
                 - x86_64
         Metadata:

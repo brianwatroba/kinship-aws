@@ -9,21 +9,21 @@ export const startTopicsHandler = async (event: ScheduledEvent): Promise<APIGate
 
         console.log(allUsers);
 
-        // const text = 'Hey there! Testing blast bulk sms messges';
-        // const from = TWILIO_PHONE_NUMBER;
+        const text = 'Hey there! Testing blast bulk sms messges';
+        const from = TWILIO_PHONE_NUMBER;
 
-        // const promises = allUsers.map((user: Record<string, any>) => {
-        //     const payload = {
-        //         to: user.phoneNumber,
-        //         from,
-        //         text,
-        //     };
-        //     sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
-        // });
+        const promises = allUsers.map((user: Record<string, any>) => {
+            const payload = {
+                to: user.phoneNumber,
+                from,
+                text,
+            };
+            return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
+        });
 
-        // const res = await Promise.all(promises);
+        const res = await Promise.all(promises);
 
-        // console.log(res);
+        console.log(res);
 
         return {
             statusCode: 200,
