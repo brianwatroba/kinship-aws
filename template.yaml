@@ -33,6 +33,33 @@ Resources:
                 Sourcemap: true
                 EntryPoints:
                     - lambdas/sendMessage.ts
+                External:
+                    - aws-sdk
+
+    StartTopicsFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: ./
+            Handler: lambdas/startTopics.startTopicsHandler
+            Runtime: nodejs18.x
+            Policies:
+                - DynamoDBReadPolicy:
+                      TableName: !Ref UsersTable
+                - SQSSendMessagePolicy:
+                      QueueName: !Ref SendMessageQueue
+            Architectures:
+                - x86_64
+        Metadata:
+            BuildMethod: esbuild
+            BuildProperties:
+                Minify: true
+                Target: es2020
+                Sourcemap: true
+                EntryPoints:
+                    - lambdas/startTopics.ts
+                External:
+                    - aws-sdk
+
     ReceiveMessageFunction:
         Type: AWS::Serverless::Function
         Properties:
@@ -55,6 +82,8 @@ Resources:
                 Sourcemap: true
                 EntryPoints:
                     - lambdas/receiveMessage.ts
+                External:
+                    - aws-sdk
     UsersTable:
         Type: 'AWS::DynamoDB::Table'
         Properties:

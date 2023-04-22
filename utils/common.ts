@@ -14,3 +14,15 @@ export const getSsmParams = async (path: string): Promise<Parameter[]> => {
 
     throw new Error('No parameters found');
 };
+
+export const parseUrlEncoded = (body: string): { [key: string]: string } => {
+    const bodyParams = new URLSearchParams(body);
+
+    const params: { [key: string]: string } = {};
+
+    bodyParams.forEach((value, key) => {
+        params[key] = decodeURIComponent(value.replace(/\+/g, ' '));
+    });
+
+    return params;
+};

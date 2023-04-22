@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { parseUrlEncoded } from '../utils/parseUrlEncoded';
-import { DynamoDBClient, QueryCommand } from '@aws-sdk/client-dynamodb';
+import { parseUrlEncoded } from '../utils/common';
+import { getItem } from '../utils/dynamodb';
 
 export const receiveMessageHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
@@ -10,22 +10,11 @@ export const receiveMessageHandler = async (event: APIGatewayProxyEvent): Promis
         if (body === null || body === undefined) throw new Error('No body in event');
         const { From: phoneNumber, Body: text } = parseUrlEncoded(body);
 
-        const client = new DynamoDBClient({ region: 'us-east-1' });
+        const getItemParams = { tableName: 'Users', partitionKey: 'phoneNumber', value: phoneNumber };
 
-        const params = {
-            TableName: 'Users',
-            KeyConditionExpression: 'phoneNumber = :phoneNumber',
-            ExpressionAttributeValues: {
-                ':phoneNumber': { S: 'phoneNumber' },
-            },
-        };
-        const command = new QueryCommand(params);
+        const user = await getItem(getItemParams);
 
-        const data = await client.send(command);
-
-        console.log(data);
-
-        // do something with the message
+        console.log(user, text);
 
         return {
             statusCode: 200,
