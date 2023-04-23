@@ -7,7 +7,7 @@ export const startTopicsHandler = async (event: ScheduledEvent): Promise<APIGate
     try {
         const allUsers = await User.scan().exec();
 
-        // look up the message
+        const text = 'What is your favorite color?';
 
         const promises = allUsers.map((user: Record<string, any>) => {
             const payload = {

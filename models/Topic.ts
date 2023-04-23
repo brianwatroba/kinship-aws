@@ -12,6 +12,19 @@ const SummarySchema = new dynamoose.Schema({
     },
 });
 
+const ResponseSchema = new dynamoose.Schema({
+    user: {
+        type: String,
+        required: true,
+    },
+    text: {
+        type: String,
+    },
+    media: {
+        type: String,
+    },
+});
+
 const TopicSchema = new dynamoose.Schema(
     {
         familyId: {
@@ -19,16 +32,17 @@ const TopicSchema = new dynamoose.Schema(
             hashKey: true,
             required: true,
         },
-        createdAt: {
-            type: Date,
-            rangeKey: true,
-            required: true,
-        },
+        responses: [ResponseSchema],
         responsesLeft: {
             type: Number,
             required: true,
         },
         summary: SummarySchema,
+        createdAt: {
+            type: Date,
+            rangeKey: true,
+            required: true,
+        },
     },
     {
         timestamps: true,
