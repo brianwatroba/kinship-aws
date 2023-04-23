@@ -1,10 +1,9 @@
 import { awsConfig, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } from './constants';
 import dynamoose from 'dynamoose';
-import { DynamoDB, DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { SQS } from '@aws-sdk/client-sqs';
 import { mockClient } from 'aws-sdk-client-mock';
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
-import { Twilio } from 'twilio';
+// import { Twilio } from 'twilio';
 
 // DyanmoDB
 export const dbClientRaw = new DynamoDB(awsConfig);
@@ -18,4 +17,4 @@ export const sqsClient = new SQS(awsConfig);
 export const mockSqsClient = mockClient(sqsClient);
 
 // Twilio
-export const twilioClient = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+// export const twilioClient = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);

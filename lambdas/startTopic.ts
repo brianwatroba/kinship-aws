@@ -7,19 +7,25 @@ import { Topic } from '../models/Topic';
 export const startTopicHandler = async (event: SQSEvent): Promise<APIGatewayProxyResult> => {
     try {
         if (event.Records.length > 1) throw new Error('Too many records in SQS event! Should only be one');
+
+        console.log('event', event);
         const record = event.Records[0];
         const { familyId, prompt } = JSON.parse(record.body);
 
         const familyMembers = await User.query('familyId').eq(familyId).exec();
         if (familyMembers.length < 1) throw new Error('No familyMembers found in family');
 
-        await Topic.create({
+        console.log('familyMembers', familyMembers);
+
+        const topic = await Topic.create({
             familyId,
             prompt,
             responsesLeft: familyMembers.length,
         });
 
-        // check topic response
+        console.log('topic', topic);
+
+        // // check topic response
 
         const promises = familyMembers.map((user: Record<string, any>) => {
             const payload = {
@@ -30,12 +36,14 @@ export const startTopicHandler = async (event: SQSEvent): Promise<APIGatewayProx
             return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
         });
 
-        await Promise.all(promises);
+        const res = await Promise.all(promises);
+
+        console.log('res', res);
 
         return {
             statusCode: 200,
             body: JSON.stringify({
-                message: `Success! Sent ${promises.length} messages`,
+                message: `Success!`,
             }),
         };
     } catch (err: any) {

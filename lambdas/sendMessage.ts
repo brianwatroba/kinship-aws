@@ -1,5 +1,6 @@
 import { APIGatewayProxyResult, SQSEvent } from 'aws-lambda';
-import { twilioClient } from '../config/clients';
+import { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } from '../config/constants';
+import { Twilio } from 'twilio';
 
 export const sendMessageHandler = async (event: SQSEvent): Promise<APIGatewayProxyResult> => {
     try {
@@ -7,6 +8,8 @@ export const sendMessageHandler = async (event: SQSEvent): Promise<APIGatewayPro
 
         const record = event.Records[0];
         const { text, to, from } = JSON.parse(record.body);
+
+        const twilioClient = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
         const res = await twilioClient.messages.create({
             body: text,

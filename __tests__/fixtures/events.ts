@@ -95,3 +95,29 @@ export const startTopicsScheduledEvent: { [key: string]: ScheduledEvent } = {
         resources: ['arn:aws:events:us-east-2:123456789012:rule/my-schedule'],
     },
 };
+
+export const startTopicSqsQueueEvents: { [key: string]: SQSEvent } = {
+    valid: {
+        Records: [
+            {
+                messageId: '12345',
+                receiptHandle: 'abcde',
+                body: JSON.stringify({
+                    familyId: '8ff23aec-5dab-4e59-bd3a-a654e5e037b8',
+                    prompt: 'What is your favorite color?',
+                }),
+                attributes: {
+                    ApproximateReceiveCount: '1',
+                    SentTimestamp: '123456789',
+                    SenderId: '123456789',
+                    ApproximateFirstReceiveTimestamp: '123456789',
+                },
+                messageAttributes: {},
+                md5OfBody: '',
+                eventSource: '',
+                eventSourceARN: '',
+                awsRegion: '',
+            },
+        ],
+    },
+};

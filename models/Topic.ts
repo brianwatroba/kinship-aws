@@ -42,11 +42,6 @@ const TopicSchema = new dynamoose.Schema(
             required: true,
         },
         summary: SummarySchema,
-        createdAt: {
-            type: Date,
-            rangeKey: true,
-            required: true,
-        },
     },
     {
         timestamps: true,

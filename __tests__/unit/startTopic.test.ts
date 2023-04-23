@@ -1,7 +1,7 @@
 import { startTopicHandler } from '../../lambdas/startTopic';
 import { SendMessageCommand } from '@aws-sdk/client-sqs';
 import { mockSqsClient } from '../../config/clients';
-import { startTopicsScheduledEvent } from '../fixtures/events';
+import { startTopicSqsQueueEvents } from '../fixtures/events';
 import { users } from '../fixtures/data';
 import { User } from '../../models/User';
 import { Model } from 'dynamoose/dist/Model';
@@ -20,9 +20,9 @@ describe('startTopics()', () => {
     });
 
     it('should return 200 when invoked with valid event', async () => {
-        mockModelFunc(User, 'scan', users);
-        mockSqsClient.on(SendMessageCommand).resolves({ MessageId: '123' });
-        const event = startTopicsScheduledEvent.valid;
+        // mockModelFunc(User, 'scan', users);
+        // mockSqsClient.on(SendMessageCommand).resolves({ MessageId: '123' });
+        const event = startTopicSqsQueueEvents.valid;
         const result = await startTopicHandler(event);
         expect(result.statusCode).toEqual(200);
         expect(true).toBe(true);

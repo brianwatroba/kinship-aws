@@ -29,6 +29,7 @@
         "@types/aws-sdk": "^2.7.0",
         "@types/jest": "^29.5.1",
         "@types/node": "^18.11.4",
+        "@types/uuid": "^9.0.1",
         "@typescript-eslint/eslint-plugin": "^5.10.2",
         "@typescript-eslint/parser": "^5.10.2",
         "dotenv": "^16.0.3",
