@@ -32,6 +32,10 @@ const TopicSchema = new dynamoose.Schema(
             hashKey: true,
             required: true,
         },
+        prompt: {
+            type: String,
+            required: true,
+        },
         responses: [ResponseSchema],
         responsesLeft: {
             type: Number,

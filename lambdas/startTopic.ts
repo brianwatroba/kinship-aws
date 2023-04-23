@@ -1,23 +1,31 @@
-import { APIGatewayProxyResult, ScheduledEvent } from 'aws-lambda';
+import { APIGatewayProxyResult, SQSEvent } from 'aws-lambda';
 import { sendMessage } from '../utils/sqs';
 import { SQS_SEND_MESSAGE_QUEUE_URL, TWILIO_PHONE_NUMBER } from '../config/constants';
 import { User } from '../models/User';
+import { Topic } from '../models/Topic';
 
-export const startTopicHandler = async (event: ScheduledEvent): Promise<APIGatewayProxyResult> => {
+export const startTopicHandler = async (event: SQSEvent): Promise<APIGatewayProxyResult> => {
     try {
-        // message payload: prompt, familyId
-        // ensure the family doesn't have a current topic running
-        // get all users in the family
-        // create topic instance
-        // send messages to all users in the family
+        if (event.Records.length > 1) throw new Error('Too many records in SQS event! Should only be one');
+        const record = event.Records[0];
+        const { familyId, prompt } = JSON.parse(record.body);
 
-        const allUsers = await User.scan().exec();
+        const familyMembers = await User.query('familyId').eq(familyId).exec();
+        if (familyMembers.length < 1) throw new Error('No familyMembers found in family');
 
-        const promises = allUsers.map((user: Record<string, any>) => {
+        await Topic.create({
+            familyId,
+            prompt,
+            responsesLeft: familyMembers.length,
+        });
+
+        // check topic response
+
+        const promises = familyMembers.map((user: Record<string, any>) => {
             const payload = {
                 to: user.phoneNumber,
                 from: TWILIO_PHONE_NUMBER,
-                text: 'Hey there! Testing blast bulk sms messges',
+                text: prompt,
             };
             return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
         });
