@@ -1,4 +1,4 @@
-import { startTopicsHandler } from '../../lambdas/startTopics';
+import { startTopicHandler } from '../../lambdas/startTopic';
 import { SendMessageCommand } from '@aws-sdk/client-sqs';
 import { mockSqsClient } from '../../config/clients';
 import { startTopicsScheduledEvent } from '../fixtures/events';
@@ -23,7 +23,7 @@ describe('startTopics()', () => {
         mockModelFunc(User, 'scan', users);
         mockSqsClient.on(SendMessageCommand).resolves({ MessageId: '123' });
         const event = startTopicsScheduledEvent.valid;
-        const result = await startTopicsHandler(event);
+        const result = await startTopicHandler(event);
         expect(result.statusCode).toEqual(200);
         expect(true).toBe(true);
     });

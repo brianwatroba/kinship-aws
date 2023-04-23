@@ -3,11 +3,15 @@ import { sendMessage } from '../utils/sqs';
 import { SQS_SEND_MESSAGE_QUEUE_URL, TWILIO_PHONE_NUMBER } from '../config/constants';
 import { User } from '../models/User';
 
-export const startTopicsHandler = async (event: ScheduledEvent): Promise<APIGatewayProxyResult> => {
+export const startTopicHandler = async (event: ScheduledEvent): Promise<APIGatewayProxyResult> => {
     try {
-        const allUsers = await User.scan().exec();
+        // message payload: prompt, familyId
+        // ensure the family doesn't have a current topic running
+        // get all users in the family
+        // create topic instance
+        // send messages to all users in the family
 
-        const text = 'What is your favorite color?';
+        const allUsers = await User.scan().exec();
 
         const promises = allUsers.map((user: Record<string, any>) => {
             const payload = {

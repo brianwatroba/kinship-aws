@@ -36,11 +36,11 @@ Resources:
                 External:
                     - aws-sdk
 
-    StartTopicsFunction:
+    StartTopicFunction:
         Type: AWS::Serverless::Function
         Properties:
             CodeUri: ./
-            Handler: lambdas/startTopics.startTopicsHandler
+            Handler: lambdas/startTopic.startTopicHandler
             Runtime: nodejs18.x
             Policies:
                 - DynamoDBReadPolicy:
@@ -49,6 +49,12 @@ Resources:
                       QueueName: send-message-queue
             Architectures:
                 - x86_64
+            Events:
+                SendMessageEvent:
+                    Type: SQS
+                    Properties:
+                        Queue: !GetAtt StartTopicQueue.Arn
+                        BatchSize: 1
         Metadata:
             BuildMethod: esbuild
             BuildProperties:
@@ -56,7 +62,7 @@ Resources:
                 Target: es2020
                 Sourcemap: true
                 EntryPoints:
-                    - lambdas/startTopics.ts
+                    - lambdas/startTopic.ts
                 External:
                     - aws-sdk
 
@@ -106,11 +112,31 @@ Resources:
                         KeyType: 'RANGE'
                   Projection:
                       ProjectionType: 'ALL'
+    TopicsTable:
+        Type: 'AWS::DynamoDB::Table'
+        Properties:
+            TableName: 'Topics'
+            AttributeDefinitions:
+                - AttributeName: 'familyId'
+                  AttributeType: 'S'
+                - AttributeName: 'createdAt'
+                  AttributeType: 'N'
+            KeySchema:
+                - AttributeName: 'familyId'
+                  KeyType: 'HASH'
+                - AttributeName: 'createdAt'
+                  KeyType: 'RANGE'
+            BillingMode: 'PAY_PER_REQUEST'
 
     SendMessageQueue:
         Type: AWS::SQS::Queue
         Properties:
             QueueName: send-message-queue
+
+    StartTopicQueue:
+        Type: AWS::SQS::Queue
+        Properties:
+            QueueName: start-topic-queue
 
     ApplicationResourceGroup:
         Type: AWS::ResourceGroups::Group
