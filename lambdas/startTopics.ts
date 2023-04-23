@@ -7,7 +7,7 @@ export const startTopicsHandler = async (event: ScheduledEvent): Promise<APIGate
     try {
         const allUsers = await getAllItems({ tableName: 'Users' });
 
-        console.log(allUsers);
+        console.log(allUsers, 'allUsers');
 
         const text = 'Hey there! Testing blast bulk sms messges';
         const from = TWILIO_PHONE_NUMBER;

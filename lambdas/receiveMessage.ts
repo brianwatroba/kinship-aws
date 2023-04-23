@@ -14,8 +14,6 @@ export const receiveMessageHandler = async (event: APIGatewayProxyEvent): Promis
 
         const user = await getItem(getItemParams);
 
-        console.log(user, text);
-
         return {
             statusCode: 200,
             body: JSON.stringify({
