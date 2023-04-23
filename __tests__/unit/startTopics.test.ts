@@ -3,26 +3,28 @@ import { ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { SendMessageCommand } from '@aws-sdk/client-sqs';
 import { mockSqsClient, mockDbClient } from '../../config/clients';
 import { startTopicsScheduledEvent } from '../fixtures/events';
+import { users } from '../fixtures/data';
+import { User } from '../../models/User';
 
-describe('receiveMessage()', () => {
+describe('startTopics()', () => {
     beforeEach(() => {
         mockDbClient.reset();
         mockSqsClient.reset();
     });
 
-    const brian = {
-        phoneNumber: '+18103330792',
-        familyId: '87225257-6073-4937-b8c3-432a4e455f44',
-    };
-
-    // const kevin = {
-    //     phoneNumber: '+15555555556',
-    //     familyId: '87225257-6073-4937-b8c3-432a4e455f44',
-    // };
-
     it('should return 200 when invoked', async () => {
-        mockDbClient.on(ScanCommand).resolves({ Items: [brian] });
-        mockSqsClient.on(SendMessageCommand).resolves({});
+        const { brian, kevin, mark, kim } = users;
+        const mockUsers = [brian, kevin, mark, kim];
+
+        // const scanSpy = jest.spyOn(User, 'scan').mockReturnThis();
+        // const execSpy = jest.spyOn(User, 'exec').mockResolvedValueOnce(mockUsers);
+
+        const scanSpy = jest.spyOn(User, 'scan');
+        scanSpy.mockReturnValueOnce({
+            exec: jest.fn().mockResolvedValueOnce(mockUsers),
+        } as any);
+
+        mockSqsClient.on(SendMessageCommand).resolves({ MessageId: '123' });
         const event = startTopicsScheduledEvent.valid;
         const result = await startTopicsHandler(event);
         console.log('result', result);

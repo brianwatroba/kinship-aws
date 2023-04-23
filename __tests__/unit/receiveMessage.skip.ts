@@ -1,11 +1,11 @@
 import { receiveMessageApiEvents } from '../fixtures/events';
 import { receiveMessageHandler } from '../../lambdas/receiveMessage';
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
-import { mockDbClient } from '../../config/clients';
+// import { mockDbClient } from '../../config/clients';
 
 describe('receiveMessage()', () => {
     beforeEach(() => {
-        mockDbClient.reset();
+        // mockDbClient.reset();
     });
 
     const brian = {
@@ -14,7 +14,7 @@ describe('receiveMessage()', () => {
     };
 
     it('should return 200 when invoked by SINGLE SQS event', async () => {
-        mockDbClient.on(GetCommand).resolves({ Item: brian });
+        // mockDbClient.on(GetCommand).resolves({ Item: brian });
         const event = receiveMessageApiEvents.valid;
         const result = await receiveMessageHandler(event);
         expect(result.statusCode).toEqual(200);

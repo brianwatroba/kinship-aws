@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { parseUrlEncoded } from '../utils/common';
 import { getItem } from '../utils/dynamodb';
+import { User } from '../models/User';
 
 export const receiveMessageHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {

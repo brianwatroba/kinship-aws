@@ -1,4 +1,4 @@
-import { dbClient } from '../config/clients';
+import { dbClientRaw } from '../config/clients';
 import { NativeAttributeValue } from '@aws-sdk/util-dynamodb';
 import { ScanCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
 
@@ -14,7 +14,7 @@ export const getItem = async (params: {
         Key: { [partitionKey]: value },
     });
 
-    const res = await dbClient.send(command);
+    const res = await dbClientRaw.send(command);
 
     return [res.Item ?? []];
 };
@@ -26,7 +26,7 @@ export const getAllItems = async (params: { tableName: string }): Promise<Record
         TableName: tableName,
     });
 
-    const res = await dbClient.send(command);
+    const res = await dbClientRaw.send(command);
 
     return res.Items ?? [];
 };

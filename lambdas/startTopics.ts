@@ -1,29 +1,16 @@
 import { APIGatewayProxyResult, ScheduledEvent } from 'aws-lambda';
-import { getAllItems } from '../utils/dynamodb';
-import { sendMessage } from '../utils/sqs';
-import { SQS_SEND_MESSAGE_QUEUE_URL, TWILIO_PHONE_NUMBER } from '../config/constants';
+// import { getAllItems } from '../utils/dynamodb';
+// import { sendMessage } from '../utils/sqs';
+// import { SQS_SEND_MESSAGE_QUEUE_URL, TWILIO_PHONE_NUMBER } from '../config/constants';
+import { User } from '../models/User';
 
 export const startTopicsHandler = async (event: ScheduledEvent): Promise<APIGatewayProxyResult> => {
     try {
-        const allUsers = await getAllItems({ tableName: 'Users' });
+        // const allUsers = await getAllItems({ tableName: 'Users' });
 
-        console.log(allUsers, 'allUsers');
+        const allUsers = await User.scan().exec();
 
-        const text = 'Hey there! Testing blast bulk sms messges';
-        const from = TWILIO_PHONE_NUMBER;
-
-        const promises = allUsers.map((user: Record<string, any>) => {
-            const payload = {
-                to: user.phoneNumber,
-                from,
-                text,
-            };
-            return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
-        });
-
-        const res = await Promise.all(promises);
-
-        console.log(res);
+        console.log(allUsers);
 
         return {
             statusCode: 200,
