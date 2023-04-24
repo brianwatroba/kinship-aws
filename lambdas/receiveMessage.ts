@@ -1,18 +1,27 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyResult } from 'aws-lambda';
 import { parseUrlEncoded } from '../utils/common';
-import { getItem } from '../utils/dynamodb';
+import { TwilioWebhookEvent } from '../__tests__/fixtures/events';
+import { User } from '../models/User';
 
-export const receiveMessageHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<APIGatewayProxyResult> => {
     try {
         // verify message integrity
 
         const { body } = event;
         if (body === null || body === undefined) throw new Error('No body in event');
-        const { From: phoneNumber, Body: text } = parseUrlEncoded(body);
+        const parsedBody = parseUrlEncoded(body);
+        const phoneNumber = `${parsedBody.From.replace(' ', '+')}`;
+        const text = parsedBody.Body;
+        console.log('parsedBody', parsedBody);
+        console.log('phoneNumber', phoneNumber);
+        console.log('text', text);
 
-        const getItemParams = { tableName: 'Users', partitionKey: 'phoneNumber', value: phoneNumber };
+        const user = await User.query({ phoneNumber: { eq: phoneNumber } }).exec();
 
-        const user = await getItem(getItemParams);
+        console.log(user);
+
+        // lookup the user
+        // look up topic to see if it's still active
 
         return {
             statusCode: 200,

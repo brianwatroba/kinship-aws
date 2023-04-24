@@ -37,10 +37,6 @@ const TopicSchema = new dynamoose.Schema(
             required: true,
         },
         responses: [ResponseSchema],
-        responsesLeft: {
-            type: Number,
-            required: true,
-        },
         summary: SummarySchema,
     },
     {

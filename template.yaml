@@ -77,6 +77,11 @@ Resources:
             Handler: lambdas/receiveMessage.receiveMessageHandler
             Runtime: nodejs18.x
             Timeout: 10
+            Policies:
+                - DynamoDBReadPolicy:
+                      TableName: Users
+                - DynamoDBCrudPolicy:
+                      TableName: Topics
             Architectures:
                 - x86_64
             Events:
