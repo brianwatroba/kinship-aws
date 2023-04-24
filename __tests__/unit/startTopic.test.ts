@@ -20,8 +20,8 @@ describe('startTopics()', () => {
     });
 
     it('should return 200 when invoked with valid event', async () => {
-        // mockModelFunc(User, 'scan', users);
-        // mockSqsClient.on(SendMessageCommand).resolves({ MessageId: '123' });
+        mockModelFunc(User, 'scan', users);
+        mockSqsClient.on(SendMessageCommand).resolves({ MessageId: '123' });
         const event = startTopicSqsQueueEvents.valid;
         const result = await startTopicHandler(event);
         expect(result.statusCode).toEqual(200);

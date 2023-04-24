@@ -8,24 +8,17 @@ export const startTopicHandler = async (event: SQSEvent): Promise<APIGatewayProx
     try {
         if (event.Records.length > 1) throw new Error('Too many records in SQS event! Should only be one');
 
-        console.log('event', event);
         const record = event.Records[0];
         const { familyId, prompt } = JSON.parse(record.body);
 
         const familyMembers = await User.query('familyId').eq(familyId).exec();
         if (familyMembers.length < 1) throw new Error('No familyMembers found in family');
 
-        console.log('familyMembers', familyMembers);
-
-        const topic = await Topic.create({
+        await Topic.create({
             familyId,
             prompt,
             responsesLeft: familyMembers.length,
         });
-
-        console.log('topic', topic);
-
-        // // check topic response
 
         const promises = familyMembers.map((user: Record<string, any>) => {
             const payload = {
