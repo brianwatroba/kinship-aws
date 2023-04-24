@@ -4,27 +4,88 @@ import { mockSqsClient } from '../../config/clients';
 import { startTopicSqsQueueEvents } from '../fixtures/events';
 import { users } from '../fixtures/data';
 import { User } from '../../models/User';
+import { Topic } from '../../models/Topic';
 import { Model } from 'dynamoose/dist/Model';
 
-const mockModelFunc = (params: Model, func: string, output: any) => {
-    const scanSpy = jest.spyOn(User, func);
+type ModelFunc = 'query' | 'create';
+
+const mockModelFunc = (model: Model, func: ModelFunc, output: any) => {
+    const scanSpy = jest.spyOn(model, func);
     scanSpy.mockReturnValueOnce({
         exec: jest.fn().mockResolvedValueOnce(output),
     } as any);
 };
 
+const [brian, kevin, elaine] = users;
+const family = [brian, kevin];
+const familyId = family[0].familyId;
+const prompt = 'test prompt';
+const topic = {
+    familyId,
+    prompt,
+    responsesLeft: family.length,
+    createdAt: 1682338600185,
+    updatedAt: 1682338600185,
+};
+const sendMessageResponse = { MessageId: '123' };
+
 describe('startTopics()', () => {
     beforeEach(() => {
         jest.restoreAllMocks();
         mockSqsClient.reset();
+        mockModelFunc(User, 'query', family);
+        mockModelFunc(Topic, 'create', topic);
+        mockSqsClient.on(SendMessageCommand).resolves(sendMessageResponse);
     });
 
-    it('should return 200 when invoked with valid event', async () => {
-        mockModelFunc(User, 'scan', users);
-        mockSqsClient.on(SendMessageCommand).resolves({ MessageId: '123' });
+    it('Success: returns 200 with valid event', async () => {
         const event = startTopicSqsQueueEvents.valid;
+        event.Records[0].body = JSON.stringify({
+            familyId,
+            prompt,
+        });
+
         const result = await startTopicHandler(event);
         expect(result.statusCode).toEqual(200);
-        expect(true).toBe(true);
+    });
+    it('Success: correct number of messages sent to SQS', async () => {
+        const event = startTopicSqsQueueEvents.valid;
+        event.Records[0].body = JSON.stringify({
+            familyId,
+            prompt,
+        });
+
+        const result = await startTopicHandler(event);
+        const sendMessageCalls = mockSqsClient.commandCalls(SendMessageCommand);
+        expect(result.statusCode).toEqual(200);
+        expect(sendMessageCalls.length).toEqual(family.length);
+    });
+    it('Failure: records > 1', async () => {
+        const event = startTopicSqsQueueEvents.valid;
+        event.Records[0].body = JSON.stringify({
+            familyId,
+            prompt,
+        });
+        event.Records.push(event.Records[0]); // 2 records
+
+        const result = await startTopicHandler(event);
+        const sendMessageCalls = mockSqsClient.commandCalls(SendMessageCommand);
+        expect(result.statusCode).toEqual(500);
+        expect(sendMessageCalls.length).toEqual(0);
+    });
+    it('Failure: no members in family', async () => {
+        const event = startTopicSqsQueueEvents.valid;
+        event.Records[0].body = JSON.stringify({
+            familyId,
+            prompt,
+        });
+
+        jest.restoreAllMocks();
+        mockModelFunc(User, 'query', []); // no family members
+
+        const result = await startTopicHandler(event);
+        const sendMessageCalls = mockSqsClient.commandCalls(SendMessageCommand);
+        expect(result.statusCode).toEqual(500);
+        expect(sendMessageCalls.length).toEqual(0);
     });
 });

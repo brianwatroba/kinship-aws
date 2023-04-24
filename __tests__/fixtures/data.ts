@@ -16,31 +16,10 @@ export const users = [
         paused: false,
     },
     {
-        phoneNumber: '+14444444444',
-        firstName: 'Mark',
-        lastName: 'Smith',
-        familyId: '8ff23aec-5dab-4e59-bd3a-a654e5e037b8',
-        paused: false,
-    },
-    {
-        phoneNumber: '+15555555555',
-        firstName: 'Kim',
-        lastName: 'Smith',
-        familyId: '8ff23aec-5dab-4e59-bd3a-a654e5e037b8',
-        paused: false,
-    },
-    {
         phoneNumber: '+16666666666',
         firstName: 'Elaine',
         lastName: 'Bennis',
         familyId: '8ff2442c-63af-4485-84ba-5b8c37716e29',
         paused: false,
     },
-    {
-        phoneNumber: '+17777777777',
-        firstName: 'Linda',
-        lastName: 'Bennis',
-        familyId: '8ff2442c-63af-4485-84ba-5b8c37716e29',
-        paused: false,
-    },
-];
+].map((user) => new User(user));
