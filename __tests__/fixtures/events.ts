@@ -1,5 +1,5 @@
 import { SQSEvent, APIGatewayProxyEvent, ScheduledEvent } from 'aws-lambda';
-import { VALID_FROM_PHONE_NUMBER } from './constants';
+import { TWILIO_PHONE_NUMBER } from '../../config/constants';
 
 // SendMessageFunction
 
@@ -9,7 +9,7 @@ export const sendMessageSqsEvents: { [key: string]: SQSEvent } = {
             {
                 messageId: '12345',
                 receiptHandle: 'abcde',
-                body: JSON.stringify({ to: '+18105556666', text: 'hello world', from: VALID_FROM_PHONE_NUMBER }),
+                body: JSON.stringify({ to: '+18105556666', text: 'hello world', from: TWILIO_PHONE_NUMBER }),
                 attributes: {
                     ApproximateReceiveCount: '1',
                     SentTimestamp: '123456789',
@@ -82,19 +82,19 @@ export const receiveMessageApiEvents: { [key: string]: APIGatewayProxyEvent } = 
 
 // StartTopicsFunction
 
-export const startTopicsScheduledEvent: { [key: string]: ScheduledEvent } = {
-    valid: {
-        version: '0',
-        account: '123456789012',
-        region: 'us-east-2',
-        detail: {},
-        'detail-type': 'Scheduled Event',
-        source: 'aws.events',
-        time: '2019-03-01T01:23:45Z',
-        id: 'cdc73f9d-aea9-11e3-9d5a-835b769c0d9c',
-        resources: ['arn:aws:events:us-east-2:123456789012:rule/my-schedule'],
-    },
-};
+// export const startTopicsScheduledEvent: { [key: string]: ScheduledEvent } = {
+//     valid: {
+//         version: '0',
+//         account: '123456789012',
+//         region: 'us-east-2',
+//         detail: {},
+//         'detail-type': 'Scheduled Event',
+//         source: 'aws.events',
+//         time: '2019-03-01T01:23:45Z',
+//         id: 'cdc73f9d-aea9-11e3-9d5a-835b769c0d9c',
+//         resources: ['arn:aws:events:us-east-2:123456789012:rule/my-schedule'],
+//     },
+// };
 
 export const startTopicSqsQueueEvents: { [key: string]: SQSEvent } = {
     valid: {

@@ -2,21 +2,12 @@ import { startTopicHandler } from '../../lambdas/startTopic';
 import { SendMessageCommand } from '@aws-sdk/client-sqs';
 import { mockSqsClient } from '../../config/clients';
 import { startTopicSqsQueueEvents } from '../fixtures/events';
+import { mockModelFunc } from '../fixtures/utils';
 import { users } from '../fixtures/data';
 import { User } from '../../models/User';
 import { Topic } from '../../models/Topic';
-import { Model } from 'dynamoose/dist/Model';
 
-type ModelFunc = 'query' | 'create';
-
-const mockModelFunc = (model: Model, func: ModelFunc, output: any) => {
-    const scanSpy = jest.spyOn(model, func);
-    scanSpy.mockReturnValueOnce({
-        exec: jest.fn().mockResolvedValueOnce(output),
-    } as any);
-};
-
-const [brian, kevin, elaine] = users;
+const [brian, kevin] = users;
 const family = [brian, kevin];
 const familyId = family[0].familyId;
 const prompt = 'test prompt';
