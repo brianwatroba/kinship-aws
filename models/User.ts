@@ -1,7 +1,12 @@
 import dynamoose from 'dynamoose';
+import { v4 as uuidv4 } from 'uuid';
 
 const UserSchema = new dynamoose.Schema(
     {
+        id: {
+            type: String,
+            default: uuidv4(),
+        },
         phoneNumber: {
             type: String,
             hashKey: true,
@@ -25,6 +30,10 @@ const UserSchema = new dynamoose.Schema(
         image: {
             type: String,
             required: true,
+        },
+        paused: {
+            type: Boolean,
+            default: false,
         },
     },
     { timestamps: true },

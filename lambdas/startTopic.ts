@@ -17,10 +17,13 @@ export const startTopicHandler = async (event: SQSEvent): Promise<APIGatewayProx
         const topic = await Topic.create({
             familyId,
             prompt,
-            responsesLeft: familyMembers.length,
+            answeredBy: familyMembers.reduce((obj, user) => {
+                obj[user.id] = false;
+                return obj;
+            }, {} as { [key: string]: boolean }),
         });
 
-        const promises = familyMembers.map((user: Record<string, any>) => {
+        const promises = familyMembers.map((user: Record<string, string>) => {
             const payload = {
                 to: user.phoneNumber,
                 from: TWILIO_PHONE_NUMBER,
