@@ -2,6 +2,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 import { parseUrlEncoded } from '../utils/common';
 import { TwilioWebhookEvent } from '../__tests__/fixtures/events';
 import { User } from '../models/User';
+import { Topic } from '../models/Topic';
 
 export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<APIGatewayProxyResult> => {
     try {
@@ -16,12 +17,24 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
         console.log('phoneNumber', phoneNumber);
         console.log('text', text);
 
-        const user = await User.query({ phoneNumber: { eq: phoneNumber } }).exec();
+        const user: any = await User.get(phoneNumber);
 
-        console.log(user);
+        const [topic] = await Topic.query('familyId').eq(user.familyId).sort('descending').limit(1).exec();
 
-        // lookup the user
-        // look up topic to see if it's still active
+        const response = {
+            user: user.id,
+            text,
+        };
+
+        topic.responses.push(response);
+        topic.answeredBy[user.id] = true;
+        await topic.save();
+
+        // create new response
+        // mark answered by
+        // if complete, mark complete
+        // save topic
+        // send response
 
         return {
             statusCode: 200,

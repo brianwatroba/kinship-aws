@@ -14,13 +14,17 @@ export const startTopicHandler = async (event: SQSEvent): Promise<APIGatewayProx
         const familyMembers = await User.query({ familyId: { eq: familyId } }).exec();
         if (familyMembers.length < 1) throw new Error('No familyMembers found in family');
 
+        const answeredBy = familyMembers.reduce((obj, user) => {
+            obj[user.id] = false;
+            return obj;
+        }, {} as { [key: string]: boolean });
+
+        console.log('answered', answeredBy);
+
         const topic = await Topic.create({
             familyId,
             prompt,
-            answeredBy: familyMembers.reduce((obj, user) => {
-                obj[user.id] = false;
-                return obj;
-            }, {} as { [key: string]: boolean }),
+            answeredBy,
         });
 
         const promises = familyMembers.map((user: Record<string, string>) => {
@@ -32,16 +36,16 @@ export const startTopicHandler = async (event: SQSEvent): Promise<APIGatewayProx
             return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
         });
 
-        const res = await Promise.all(promises);
+        await Promise.all(promises);
 
         return {
             statusCode: 200,
             body: JSON.stringify({
-                message: `Success: ${topic} created and ${res.length} messages sent`,
+                message: `Success: ${topic} messages sent`,
             }),
         };
     } catch (err: any) {
-        console.log(err.message);
+        console.log(err);
         return {
             statusCode: 500,
             body: JSON.stringify({

@@ -1,11 +1,14 @@
 import { startTopicHandler } from '../../lambdas/startTopic';
 import { SendMessageCommand } from '@aws-sdk/client-sqs';
-import { mockSqsClient } from '../../config/clients';
+import { sqsClient } from '../../config/clients';
+import { mockClient } from 'aws-sdk-client-mock';
 import { startTopicSqsQueueEvents } from '../fixtures/events';
 import { mockModelFunc } from '../fixtures/utils';
 import { users } from '../fixtures/data';
 import { User } from '../../models/User';
 import { Topic } from '../../models/Topic';
+
+export const mockSqsClient = mockClient(sqsClient);
 
 const [brian, kevin] = users;
 const family = [brian, kevin];
@@ -30,6 +33,7 @@ describe('startTopics()', () => {
     });
 
     it('Success: returns 200 with valid event', async () => {
+        console.log('brian', brian);
         const event = startTopicSqsQueueEvents.valid;
         event.Records[0].body = JSON.stringify({
             familyId,

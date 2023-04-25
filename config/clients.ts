@@ -11,4 +11,3 @@ export const mockDbClient = mockClient(dbClientRaw);
 
 // SQS
 export const sqsClient = new SQS(awsConfig);
-export const mockSqsClient = mockClient(sqsClient);

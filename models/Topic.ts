@@ -1,6 +1,25 @@
 import dynamoose from 'dynamoose';
 import { v4 as uuidv4 } from 'uuid';
 
+const ResponseSchema = new dynamoose.Schema({
+    user: {
+        type: String,
+        required: true,
+    },
+    text: {
+        type: String,
+        default: '',
+    },
+    media: {
+        type: String,
+        default: '',
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+});
+
 const TopicSchema = new dynamoose.Schema(
     {
         id: {
@@ -11,39 +30,19 @@ const TopicSchema = new dynamoose.Schema(
             type: String,
             hashKey: true,
             required: true,
-            index: {
-                name: 'createdAtIndex',
-                rangeKey: 'createdAt',
-            },
         },
         prompt: {
             type: String,
             required: true,
         },
         responses: {
-            type: [
-                new dynamoose.Schema(
-                    {
-                        user: {
-                            type: String,
-                            required: true,
-                        },
-                        text: {
-                            type: String,
-                        },
-                        media: {
-                            type: String,
-                        },
-                    },
-                    {
-                        timestamps: true,
-                    },
-                ),
-            ],
+            type: Array,
+            schema: [ResponseSchema],
             default: [],
         },
         answeredBy: {
             type: Object,
+            required: true,
         },
         completed: {
             type: Boolean,
@@ -51,6 +50,9 @@ const TopicSchema = new dynamoose.Schema(
         },
     },
     {
+        saveUnknown: [
+            'answeredBy.*', // store 1 level deep of nested properties in `answeredBy` property
+        ],
         timestamps: true,
     },
 );

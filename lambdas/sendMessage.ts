@@ -20,6 +20,7 @@ export const sendMessageHandler = async (event: SQSEvent): Promise<APIGatewayPro
         const { status } = res;
 
         const sentSuccess = status === 'queued' || status === 'sending' || status === 'sent';
+
         if (sentSuccess) {
             return {
                 statusCode: 200,
