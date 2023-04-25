@@ -14,6 +14,18 @@ const UserSchema = new dynamoose.Schema(
                 name: 'familyIdIndex',
             },
         },
+        firstName: {
+            type: String,
+            required: true,
+        },
+        lastName: {
+            type: String,
+            required: true,
+        },
+        image: {
+            type: String,
+            required: true,
+        },
     },
     { timestamps: true },
 );
