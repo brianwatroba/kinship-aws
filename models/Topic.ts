@@ -6,24 +6,29 @@ const SummarySchema = new dynamoose.Schema({
         type: String,
         default: uuidv4,
     },
-    s3Url: {
+    mediaUrl: {
         type: String,
         default: '',
     },
 });
 
-const ResponseSchema = new dynamoose.Schema({
-    user: {
-        type: String,
-        required: true,
+const ResponseSchema = new dynamoose.Schema(
+    {
+        user: {
+            type: String,
+            required: true,
+        },
+        text: {
+            type: String,
+        },
+        media: {
+            type: String,
+        },
     },
-    text: {
-        type: String,
+    {
+        timestamps: true,
     },
-    media: {
-        type: String,
-    },
-});
+);
 
 const TopicSchema = new dynamoose.Schema(
     {
@@ -37,6 +42,14 @@ const TopicSchema = new dynamoose.Schema(
             required: true,
         },
         responses: [ResponseSchema],
+        answeredBy: {
+            type: Object,
+            required: true,
+        },
+        completed: {
+            type: Boolean,
+            default: false,
+        },
         summary: SummarySchema,
     },
     {
