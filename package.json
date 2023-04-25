@@ -8,6 +8,7 @@
     "scripts": {
         "unit": "jest --config=jest.config.ts",
         "deploy": "sam build && sam deploy",
+        "start-api": "sam build && DOCKER_HOST=unix://$HOME/.docker/run/docker.sock sam local start-api",
         "lint": "eslint '*.ts' --quiet --fix",
         "compile": "tsc",
         "test": "npm run compile && npm run unit"
@@ -21,6 +22,7 @@
         "aws-sdk-client-mock": "^2.1.1",
         "dynamoose": "^3.2.0",
         "esbuild": "^0.14.14",
+        "eta": "^2.0.1",
         "twilio": "^4.10.0",
         "uuid": "^9.0.0"
     },

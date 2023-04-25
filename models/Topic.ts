@@ -56,9 +56,6 @@ const TopicSchema = new dynamoose.Schema(
         },
     },
     {
-        saveUnknown: [
-            'answeredBy.*', // store 1 level deep of nested properties in `answeredBy` property
-        ],
         timestamps: true,
     },
 );

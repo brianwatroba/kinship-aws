@@ -70,28 +70,24 @@ Resources:
                 External:
                     - aws-sdk
 
-    ReceiveMessageFunction:
+    RenderSummaryFunction:
         Type: AWS::Serverless::Function
         Properties:
             CodeUri: ./
-            Handler: lambdas/receiveMessage.receiveMessageHandler
+            Handler: lambdas/renderSummary.renderSummaryHandler
             Runtime: nodejs18.x
             Timeout: 10
             Policies:
                 - DynamoDBReadPolicy:
                       TableName: Users
-                - DynamoDBCrudPolicy:
-                      TableName: Topics
-                - SQSSendMessagePolicy:
-                      QueueName: send-message-queue
             Architectures:
                 - x86_64
             Events:
                 ReceiveMessage:
                     Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                     Properties:
-                        Path: /receiveMessage
-                        Method: post
+                        Path: /renderSummary
+                        Method: get
         Metadata: # Manage esbuild properties
             BuildMethod: esbuild
             BuildProperties:
@@ -99,7 +95,7 @@ Resources:
                 Target: es2020
                 Sourcemap: true
                 EntryPoints:
-                    - lambdas/receiveMessage.ts
+                    - lambdas/renderSummary.ts
                 External:
                     - aws-sdk
     UsersTable:
