@@ -82,6 +82,8 @@ Resources:
                       TableName: Users
                 - DynamoDBCrudPolicy:
                       TableName: Topics
+                - SQSSendMessagePolicy:
+                      QueueName: send-message-queue
             Architectures:
                 - x86_64
             Events:

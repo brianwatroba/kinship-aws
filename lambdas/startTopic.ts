@@ -1,6 +1,6 @@
 import { APIGatewayProxyResult, SQSEvent } from 'aws-lambda';
 import { sendMessage } from '../utils/sqs';
-import { SQS_SEND_MESSAGE_QUEUE_URL, TWILIO_PHONE_NUMBER } from '../config/constants';
+import { SQS_SEND_MESSAGE_QUEUE_URL } from '../config/constants';
 import { User } from '../models/User';
 import { Topic } from '../models/Topic';
 
@@ -24,13 +24,12 @@ export const startTopicHandler = async (event: SQSEvent): Promise<APIGatewayProx
         const topic = await Topic.create({
             familyId,
             prompt,
-            answeredBy,
+            participants: familyMembers.map((user) => user.id),
         });
 
         const promises = familyMembers.map((user: Record<string, string>) => {
             const payload = {
                 to: user.phoneNumber,
-                from: TWILIO_PHONE_NUMBER,
                 text: prompt,
             };
             return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });

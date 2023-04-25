@@ -1,5 +1,5 @@
 import { APIGatewayProxyResult, SQSEvent } from 'aws-lambda';
-import { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } from '../config/constants';
+import { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER } from '../config/constants';
 import { Twilio } from 'twilio';
 
 const twilioClient = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
@@ -9,11 +9,11 @@ export const sendMessageHandler = async (event: SQSEvent): Promise<APIGatewayPro
         if (event.Records.length > 1) throw new Error('Too many records in SQS event! Should only be one');
 
         const record = event.Records[0];
-        const { text, to, from } = JSON.parse(record.body);
+        const { text, to } = JSON.parse(record.body);
 
         const res = await twilioClient.messages.create({
             body: text,
-            from,
+            from: TWILIO_PHONE_NUMBER,
             to,
         });
 

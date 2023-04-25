@@ -40,9 +40,15 @@ const TopicSchema = new dynamoose.Schema(
             schema: [ResponseSchema],
             default: [],
         },
-        answeredBy: {
-            type: Object,
+        participants: {
+            type: Array,
+            schema: [String],
             required: true,
+        },
+        whoHasAnswered: {
+            type: Array,
+            schema: [String],
+            default: [],
         },
         completed: {
             type: Boolean,
