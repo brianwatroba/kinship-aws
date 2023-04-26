@@ -5,6 +5,10 @@ export const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN ?? '';
 export const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER ?? '';
 export const TWILIO_WEBHOOK_URL = process.env.TWILIO_WEBHOOK_URL ?? '';
 
+export const STANDARD_RESPONSES = {
+    RESPONSE_SAVED: '[SAVED \u2713]',
+};
+
 export const awsConfig = {
     region: 'us-east-1',
     apiVersion: '2014-11-06',

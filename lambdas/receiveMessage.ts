@@ -5,6 +5,8 @@ import { SQS_SEND_MESSAGE_QUEUE_URL } from '../config/constants';
 import { sendMessage } from '../utils/sqs';
 import { User } from '../models/User';
 import { Topic } from '../models/Topic';
+import { Family } from '../models/Family';
+import { STANDARD_RESPONSES } from '../config/constants';
 
 export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<APIGatewayProxyResult> => {
     try {
@@ -35,17 +37,19 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
             queueUrl: SQS_SEND_MESSAGE_QUEUE_URL,
             payload: {
                 to: user.phoneNumber,
-                text: `[RESPONSE SAVED]`,
+                text: STANDARD_RESPONSES.RESPONSE_SAVED,
             },
         });
 
         if (allAnswered) {
             const familyMembers = await User.query({ familyId: { eq: user.familyId } }).exec();
+
             const promises = familyMembers.map((user: Record<string, string>) => {
                 const payload = {
                     to: user.phoneNumber,
-                    text: `Everyone has answered the question! \n ${JSON.stringify(topic.responses, null, 2)}`,
+                    text: `Everyone has answered the question! \n Check out your summary: https://w2mrwgygx5.execute-api.us-east-1.amazonaws.com/Prod/renderSummary/${topic.id}`,
                 };
+                // TODO: add a delay, 5 mins or so
                 return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
             });
 
