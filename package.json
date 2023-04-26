@@ -7,8 +7,8 @@
     "license": "MIT",
     "scripts": {
         "unit": "jest --config=jest.config.ts",
-        "deploy": "sam build && sam deploy",
-        "start-api": "sam build && DOCKER_HOST=unix://$HOME/.docker/run/docker.sock sam local start-api",
+        "deploy": "sam validate && sam build && sam deploy",
+        "start-api": "sam validate && sam build && DOCKER_HOST=unix://$HOME/.docker/run/docker.sock sam local start-api",
         "lint": "eslint '*.ts' --quiet --fix",
         "compile": "tsc",
         "test": "npm run compile && npm run unit"

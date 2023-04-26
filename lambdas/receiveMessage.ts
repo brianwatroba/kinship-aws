@@ -47,9 +47,8 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
             const promises = familyMembers.map((user: Record<string, string>) => {
                 const payload = {
                     to: user.phoneNumber,
-                    text: `Everyone has answered the question! \n Check out your summary: https://w2mrwgygx5.execute-api.us-east-1.amazonaws.com/Prod/renderSummary/${topic.id}`,
+                    text: `Everyone has answered the question! Check out your summary: https://w2mrwgygx5.execute-api.us-east-1.amazonaws.com/Prod/renderSummary/${topic.id}`,
                 };
-                // TODO: add a delay, 5 mins or so
                 return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
             });
 
