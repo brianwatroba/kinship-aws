@@ -31,7 +31,14 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
         if (!hasAnsweredAlready) topic.whoHasAnswered.push(user.id);
         const allAnswered = topic.whoHasAnswered.length === topic.participants.length;
         if (allAnswered) topic.completed = true;
-        await topic.save();
+        const savedTopic = await topic.save();
+
+        const link = `https://w2mrwgygx5.execute-api.us-east-1.amazonaws.com/Prod/renderSummary/${topic.id}`;
+
+        console.log('oldTopic', topic);
+        console.log('newTopic', savedTopic);
+        console.log('link test', link);
+        console.log('allAnswered', allAnswered);
 
         const confirmMessage = await sendMessage({
             queueUrl: SQS_SEND_MESSAGE_QUEUE_URL,
@@ -44,10 +51,13 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
         if (allAnswered) {
             const familyMembers = await User.query({ familyId: { eq: user.familyId } }).exec();
 
+            console.log('familyMembers', familyMembers);
+
             const promises = familyMembers.map((user: Record<string, string>) => {
+                console.log('inside loop, user', user);
                 const payload = {
                     to: user.phoneNumber,
-                    text: `Everyone has answered the question! Check out your summary: https://w2mrwgygx5.execute-api.us-east-1.amazonaws.com/Prod/renderSummary/${topic.id}`,
+                    text: `Everyone has answered the question! Check out your summary`,
                 };
                 return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
             });

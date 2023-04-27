@@ -2,7 +2,10 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { Topic } from '../models/Topic';
 import { Family } from '../models/Family';
 import { User } from '../models/User';
-import * as Eta from 'eta';
+import { webpage } from '../views/pages/summary';
+import * as eta from 'eta';
+import path from 'path';
+// import summaryTemplate from '../views/pages/summary.eta';
 
 //TODO: need to factor in a get request with uuid for topic
 
@@ -25,22 +28,19 @@ export const renderSummaryHandler = async (event: APIGatewayProxyEvent): Promise
 
         familyMembers.forEach((user) => (userIdsToNames[user.id] = user.name));
 
-        const myTemplate =
-            '<h1>The <%= it.family.name %> Family</h1> <h3>Question: <%= it.topic.prompt %></h3> <h4>Responses:<h4> <ul> <% for (const response of it.topic.responses) { %> <li> <%= response.text %></li> <% } %> </ul>';
-
-        const page = Eta.render(myTemplate, { topic, family });
-        // const page = Eta.render(myTemplate, { topic, familyMembers });
+        // const myTemplate =
+        //     '<h1>The <%= it.family.name %> Family</h1> <h3>Question: <%= it.topic.prompt %></h3> <h4>Responses:<h4> <ul> <% for (const response of it.topic.responses) { %> <li> <%= response.text %></li> <% } %> </ul>';
+        const pages = eta.render(webpage, { topic, family });
 
         return {
             statusCode: 200,
             headers: { 'Content-type': 'text/html' },
-            body: page,
+            body: pages,
         };
     } catch (err: any) {
         console.log(err.message);
         return {
             statusCode: 500,
-
             body: JSON.stringify({
                 message: err.message,
             }),
