@@ -130,8 +130,7 @@ Resources:
         Metadata: # Manage esbuild properties
             BuildMethod: esbuild
             BuildProperties:
-                Minify: true
-                Target: es2020
+                Minify: false
                 Sourcemap: true
                 Loader:
                     - .eta=file
