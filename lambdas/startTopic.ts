@@ -14,8 +14,6 @@ export const startTopicHandler = async (event: SQSEvent): Promise<APIGatewayProx
         const familyMembers = await User.query({ familyId: { eq: familyId } }).exec();
         if (familyMembers.length < 1) throw new Error('No familyMembers found in family');
 
-        console.log(familyMembers);
-
         const topic = await Topic.create({
             familyId,
             prompt,

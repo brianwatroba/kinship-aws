@@ -138,6 +138,38 @@ Resources:
                     - lambdas/getTopicSummary.ts
                 External:
                     - aws-sdk
+    TriggerDailyTopicsFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: ./
+            Handler: lambdas/triggerDailyTopics.triggerDailyTopicsHandler
+            Runtime: nodejs18.x
+            Timeout: 10
+            Policies:
+                - DynamoDBReadPolicy:
+                      TableName: Families
+                - SQSSendMessagePolicy:
+                      QueueName: start-topic-queue
+            Architectures:
+                - x86_64
+            Events:
+                ScheduledEvent:
+                    Type: Schedule
+                    Properties:
+                        Schedule: 'cron(0 15 * * ? *)' # Trigger at 11:00AM EST, which is 3:00PM UTC (UTC is used by AWS for scheduled events)
+                        Enabled: True
+
+        Metadata:
+            BuildMethod: esbuild
+            BuildProperties:
+                Minify: true
+                Target: es2020
+                Sourcemap: true
+                EntryPoints:
+                    - lambdas/triggerDailyTopics.ts
+                External:
+                    - aws-sdk
+
     UsersTable:
         Type: 'AWS::DynamoDB::Table'
         Properties:

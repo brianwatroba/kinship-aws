@@ -18,10 +18,24 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
         const text = parsedBody.Body;
         const numMedia = Number(parsedBody.NumMedia);
 
-        console.log('parsedBody', parsedBody);
-
         const user: any = await User.get(phoneNumber);
         const [topic] = await Topic.query('familyId').eq(user.familyId).sort('descending').limit(1).exec();
+
+        if (topic.completed) {
+            await sendMessage({
+                queueUrl: SQS_SEND_MESSAGE_QUEUE_URL,
+                payload: {
+                    to: user.phoneNumber,
+                    text: `Today's topic is completed! No more answers are being accepted.`,
+                },
+            });
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    message: `Success!`,
+                }),
+            };
+        }
 
         const responseHasText = text !== '';
         const responseHasMedia = numMedia > 0;
@@ -51,14 +65,14 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
         if (allAnswered) topic.completed = true;
         await topic.save();
 
-        console.log('topic', topic);
+        const answeredProportion = `${topic.whoHasAnswered.length}/${topic.participants.length} 👪`;
 
         // confirm message
         await sendMessage({
             queueUrl: SQS_SEND_MESSAGE_QUEUE_URL,
             payload: {
                 to: user.phoneNumber,
-                text: STANDARD_RESPONSES.RESPONSE_SAVED,
+                text: `${STANDARD_RESPONSES.RESPONSE_SAVED} | ${answeredProportion}`,
             },
         });
 
@@ -71,7 +85,7 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
                 console.log('inside loop, user', user);
                 const payload = {
                     to: user.phoneNumber,
-                    text: `Everyone has answered the question! Check out your summary`,
+                    text: `Answers are in! Today's summary: ${summaryLink}`,
                 };
                 return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
             });
