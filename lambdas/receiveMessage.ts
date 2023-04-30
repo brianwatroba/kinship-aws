@@ -5,7 +5,6 @@ import { SQS_SEND_MESSAGE_QUEUE_URL } from '../config/constants';
 import { sendMessage } from '../utils/sqs';
 import { User } from '../models/User';
 import { Topic } from '../models/Topic';
-import { Family } from '../models/Family';
 import { STANDARD_RESPONSES } from '../config/constants';
 
 export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<APIGatewayProxyResult> => {
@@ -17,30 +16,45 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
         const parsedBody = parseUrlEncoded(body);
         const phoneNumber = `${parsedBody.From.replace(' ', '+')}`;
         const text = parsedBody.Body;
+        const numMedia = Number(parsedBody.NumMedia);
+
+        console.log('parsedBody', parsedBody);
 
         const user: any = await User.get(phoneNumber);
         const [topic] = await Topic.query('familyId').eq(user.familyId).sort('descending').limit(1).exec();
 
-        const topicResponse = {
-            user: user.id,
-            text,
-        };
+        const responseHasText = text !== '';
+        const responseHasMedia = numMedia > 0;
 
-        topic.responses.push(topicResponse);
+        if (responseHasText) {
+            const textResponse = {
+                user: user.id,
+                text,
+            };
+            topic.responses.push(textResponse);
+        }
+
+        if (responseHasMedia) {
+            for (let i = 0; i < numMedia; i++) {
+                const mediaUrl = `MediaUrl${i}`;
+                const mediaResponse = {
+                    user: user.id,
+                    media: parsedBody[mediaUrl],
+                };
+                topic.responses.push(mediaResponse);
+            }
+        }
+
         const hasAnsweredAlready = topic.whoHasAnswered.includes(user.id);
         if (!hasAnsweredAlready) topic.whoHasAnswered.push(user.id);
         const allAnswered = topic.whoHasAnswered.length === topic.participants.length;
         if (allAnswered) topic.completed = true;
-        const savedTopic = await topic.save();
+        await topic.save();
 
-        const link = `https://main.d3ql2zjyjkibh4.amplifyapp.com/summaries/${topic.id}`;
+        console.log('topic', topic);
 
-        console.log('oldTopic', topic);
-        console.log('newTopic', savedTopic);
-        console.log('link test', link);
-        console.log('allAnswered', allAnswered);
-
-        const confirmMessage = await sendMessage({
+        // confirm message
+        await sendMessage({
             queueUrl: SQS_SEND_MESSAGE_QUEUE_URL,
             payload: {
                 to: user.phoneNumber,
@@ -51,13 +65,13 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
         if (allAnswered) {
             const familyMembers = await User.query({ familyId: { eq: user.familyId } }).exec();
 
-            console.log('familyMembers', familyMembers);
+            const summaryLink = `https://main.d3ql2zjyjkibh4.amplifyapp.com/summaries/${topic.id}`;
 
             const promises = familyMembers.map((user: Record<string, string>) => {
                 console.log('inside loop, user', user);
                 const payload = {
                     to: user.phoneNumber,
-                    text: `Everyone has answered the question! Check out your summary: ${link}`,
+                    text: `Everyone has answered the question! Check out your summary`,
                 };
                 return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
             });
