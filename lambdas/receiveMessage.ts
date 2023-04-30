@@ -33,7 +33,7 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
         if (allAnswered) topic.completed = true;
         const savedTopic = await topic.save();
 
-        const link = `https://w2mrwgygx5.execute-api.us-east-1.amazonaws.com/Prod/renderSummary/${topic.id}`;
+        const link = `https://w2mrwgygx5.execute-api.us-east-1.amazonaws.com/Prod/getTopicSummary/${topic.id}`;
 
         console.log('oldTopic', topic);
         console.log('newTopic', savedTopic);
@@ -57,7 +57,7 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
                 console.log('inside loop, user', user);
                 const payload = {
                     to: user.phoneNumber,
-                    text: `Everyone has answered the question! Check out your summary`,
+                    text: `Everyone has answered the question! Check out your summary: ${link}`,
                 };
                 return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
             });
