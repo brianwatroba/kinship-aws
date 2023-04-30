@@ -33,7 +33,7 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
         if (allAnswered) topic.completed = true;
         const savedTopic = await topic.save();
 
-        const link = `https://w2mrwgygx5.execute-api.us-east-1.amazonaws.com/Prod/getTopicSummary/${topic.id}`;
+        const link = `https://main.d3ql2zjyjkibh4.amplifyapp.com/summaries/${topic.id}`;
 
         console.log('oldTopic', topic);
         console.log('newTopic', savedTopic);
