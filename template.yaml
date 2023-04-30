@@ -105,11 +105,11 @@ Resources:
                 External:
                     - aws-sdk
 
-    RenderSummaryFunction:
+    GetTopicSummaryFunction:
         Type: AWS::Serverless::Function
         Properties:
             CodeUri: ./
-            Handler: lambdas/renderSummary.renderSummaryHandler
+            Handler: lambdas/getTopicSummary.getTopicSummaryHandler
             Runtime: nodejs18.x
             Timeout: 10
             Policies:
@@ -125,7 +125,7 @@ Resources:
                 ReceiveMessage:
                     Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                     Properties:
-                        Path: /renderSummary/{topicId}
+                        Path: /getTopicSummary/{topicId}
                         Method: get
         Metadata: # Manage esbuild properties
             BuildMethod: esbuild
@@ -135,7 +135,7 @@ Resources:
                 Loader:
                     - .eta=file
                 EntryPoints:
-                    - lambdas/renderSummary.ts
+                    - lambdas/getTopicSummary.ts
                 External:
                     - aws-sdk
     UsersTable:

@@ -8,7 +8,7 @@
     "scripts": {
         "unit": "jest --config=jest.config.ts",
         "deploy": "sam validate && sam build && sam deploy",
-        "start-api": "sam validate && sam build && DOCKER_HOST=unix://$HOME/.docker/run/docker.sock sam local start-api",
+        "start-api": "sam validate && sam build && DOCKER_HOST=unix://$HOME/.docker/run/docker.sock sam local start-api --port 5000",
         "lint": "eslint '*.ts' --quiet --fix",
         "compile": "tsc",
         "test": "npm run compile && npm run unit"
