@@ -15,23 +15,14 @@ export const triggerDailyTopicsHandler = async (event: ScheduledEvent): Promise<
         const allFamilies = await Family.scan().exec();
 
         const dayOfWeek = dayjs().day();
-        if (dayOfWeek === 2 || dayOfWeek === 4) {
-            // do nothing on Tuesday or Thursday
-            return {
-                statusCode: 200,
-                body: JSON.stringify({
-                    message: `Success!`,
-                }),
-            };
-        }
         let promptsByDay;
 
         if (dayOfWeek === 0) {
             promptsByDay = prompts.heavy;
-        } else if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) {
-            promptsByDay = prompts.light;
-        } else {
+        } else if (dayOfWeek === 6) {
             promptsByDay = prompts.medium;
+        } else {
+            promptsByDay = prompts.light;
         }
 
         const randIndex = getRandomValueInRange(0, promptsByDay.length - 1);
