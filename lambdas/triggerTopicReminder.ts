@@ -11,7 +11,7 @@ export const triggerTopicReminderHandler = async (event: ScheduledEvent): Promis
         const allFamilies = await Family.scan().exec();
 
         for (const family of allFamilies) {
-            const [topic] = await Topic.query('familyId').eq(family.familyId).sort('descending').limit(1).exec();
+            const [topic] = await Topic.query('familyId').eq(family.id).sort('descending').limit(1).exec();
             if (topic.completed) continue;
 
             const familyMembers = await User.query({ familyId: { eq: family.id } }).exec();
@@ -34,7 +34,7 @@ export const triggerTopicReminderHandler = async (event: ScheduledEvent): Promis
                     queueUrl: SQS_SEND_MESSAGE_QUEUE_URL,
                     payload: {
                         to: user.phoneNumber,
-                        text: `Your fam is waiting for your answer! | ${answeredProportion} have answered.\n\nPrompt:${topic.prompt}`,
+                        text: `Your fam is waiting for you! | ${answeredProportion} have answered.\n\nPrompt: "${topic.prompt}"`,
                     },
                 });
             });
