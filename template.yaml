@@ -156,7 +156,7 @@ Resources:
                 ScheduledEvent:
                     Type: Schedule
                     Properties:
-                        Schedule: 'cron(0 15 * * ? *)' # Trigger at 11:00AM EST, which is 3:00PM UTC (UTC is used by AWS for scheduled events)
+                        Schedule: 'cron(0 16 * * ? *)' # Trigger at 11:00AM EST, which is 3:00PM UTC (UTC is used by AWS for scheduled events)
                         Enabled: True
         Metadata:
             BuildMethod: esbuild
