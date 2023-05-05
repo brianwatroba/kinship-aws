@@ -156,7 +156,32 @@ Resources:
                 ScheduledEvent:
                     Type: Schedule
                     Properties:
-                        Schedule: 'cron(0 20 * * ? *)' # Trigger at 11:00AM EST, which is 3:00PM UTC (UTC is used by AWS for scheduled events)
+                        Schedule: 'cron(0 15 * * ? *)' # Trigger at 11:00AM EST, which is 3:00PM UTC (UTC is used by AWS for scheduled events)
+                        Enabled: True
+
+    TriggerTopicReminderFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: ./
+            Handler: lambdas/triggerTopicReminder.triggerTopicReminderHandler
+            Runtime: nodejs18.x
+            Timeout: 10
+            Policies:
+                - DynamoDBReadPolicy:
+                      TableName: Families
+                - DynamoDBReadPolicy:
+                      TableName: Topics
+                - DynamoDBReadPolicy:
+                      TableName: Users
+                - SQSSendMessagePolicy:
+                      QueueName: send-message-queue
+            Architectures:
+                - x86_64
+            Events:
+                ScheduledEvent:
+                    Type: Schedule
+                    Properties:
+                        Schedule: 'cron(0 23 * * ? *)'
                         Enabled: True
 
         Metadata:
@@ -166,7 +191,7 @@ Resources:
                 Target: es2020
                 Sourcemap: true
                 EntryPoints:
-                    - lambdas/triggerDailyTopics.ts
+                    - lambdas/triggerTopicReminder.ts
                 External:
                     - aws-sdk
 
