@@ -5,15 +5,15 @@ import { User } from '../models/User';
 
 export const getTopicSummaryHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
-        console.log(event);
         const { pathParameters } = event;
         if (pathParameters === null || pathParameters === undefined) throw new Error('No path parameters');
+
         const { topicId } = pathParameters;
-        console.log('topicId', topicId);
         if (topicId === null || topicId === undefined) throw new Error('No topicId');
 
         const [topic] = await Topic.scan('id').eq(topicId).exec();
         if (topic === undefined) throw new Error('Topic not found');
+
         const familyMembers = await User.query('familyId').eq(topic.familyId).exec();
         const family = await Family.get(familyMembers[0].familyId);
 

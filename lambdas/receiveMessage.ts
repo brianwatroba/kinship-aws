@@ -9,7 +9,7 @@ import { STANDARD_RESPONSES } from '../config/constants';
 
 export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<APIGatewayProxyResult> => {
     try {
-        // verify message integrity
+        // !TODO: verify message integrity
 
         const { body } = event;
         if (body === null || body === undefined) throw new Error('No body in event');

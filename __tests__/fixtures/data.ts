@@ -1,5 +1,5 @@
 import { User } from '../../models/User';
-// import { Family } from '../../models/Family';
+import { Family } from '../../models/Family';
 import { Topic } from '../../models/Topic';
 
 const family1Id = '8ff23aec-5dab-4e59-bd3a-a654e5e037b8';
@@ -35,20 +35,20 @@ export const users = [
     },
 ].map((user) => new User(user));
 
-// export const families = [
-//     {
-//         id: family1Id,
-//         name: 'The Smiths',
-//         image: 'https://example.com/image.jpg',
-//         paused: false,
-//     },
-//     {
-//         id: family2Id,
-//         name: 'The Bennises',
-//         image: 'https://example.com/image.jpg',
-//         paused: false,
-//     },
-// ].map((family) => new Family(family));
+export const families = [
+    {
+        id: family1Id,
+        name: 'The Smiths',
+        image: 'https://example.com/image.jpg',
+        paused: false,
+    },
+    {
+        id: family2Id,
+        name: 'The Bennises',
+        image: 'https://example.com/image.jpg',
+        paused: false,
+    },
+].map((family) => new Family(family));
 
 export const topics = [
     {
