@@ -2,6 +2,17 @@
 
 SMS-based daily question game that helps families feel more connected.
 
+<br>
+
+<div style="display: flex;">
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" height="20" />
+  <img src="https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" height="20" />
+  <img src="https://img.shields.io/badge/Amazon%20DynamoDB-4053D6?style=for-the-badge&logo=Amazon%20DynamoDB&logoColor=white" height="20" />
+  <img src="https://img.shields.io/badge/Twilio-F22F46?style=for-the-badge&logo=Twilio&logoColor=white" height="20" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" height="20" />
+  <img src="https://img.shields.io/badge/Amazon_AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white" height="20" />
+</div>
+
 ## The challenge
 
 In today's digital age, families often feel disconnected from each other. Generational gaps, distance, and different use/relationships with social media add to the divide. My family definitely feels this.
