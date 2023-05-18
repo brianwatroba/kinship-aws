@@ -14,6 +14,8 @@ SMS-based daily question game that helps families feel more connected.
 
 ---
 
+![Kinship user flow](https://res.cloudinary.com/dfuyisjqi/image/upload/v1683811744/kinship/flowdemo_afkdrz.png)
+
 ## The challenge
 
 In today's digital age, families often feel disconnected from each other. Generational gaps, distance, and different use/relationships with social media add to the divide. My family definitely feels this.
@@ -57,10 +59,6 @@ Once all responses are in each day, Kinship generates a summary of everyone's an
 Kinship allows families to customize their experience by controlling the tone and topics of the daily questions.
 
 Users can choose to receive questions that are more lighthearted and fun, or more serious and reflective. They can also submit custom questions that are tailored to their family's interests or current events. Users can also adjust the frequency of the questions to better fit their family's schedule and preferences. Multiple questions can also be triggered each day if the family decides to do so.
-
-## How it looks
-
-![Kinship user flow](https://res.cloudinary.com/dfuyisjqi/image/upload/v1683811744/kinship/flowdemo_afkdrz.png)
 
 ## Access
 
