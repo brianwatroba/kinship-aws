@@ -19,10 +19,17 @@ export const triggerDailyTopicsHandler = async (event: ScheduledEvent): Promise<
 
         if (dayOfWeek === 0) {
             promptsByDay = prompts.heavy;
-        } else if (dayOfWeek === 6) {
+        } else if (dayOfWeek === 5) {
             promptsByDay = prompts.medium;
-        } else {
+        } else if (dayOfWeek === 2) {
             promptsByDay = prompts.light;
+        } else {
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    message: `Success!`,
+                }),
+            };
         }
 
         const randIndex = getRandomValueInRange(0, promptsByDay.length - 1);
