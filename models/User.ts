@@ -39,4 +39,11 @@ const UserSchema = new dynamoose.Schema(
     { timestamps: true },
 );
 
-export const User = dynamoose.model('Users', UserSchema);
+const User = dynamoose.model('Users', UserSchema);
+
+User.methods.set('getAllByFamily', async (familyId) => {
+    const users = await User.query({ familyId: { eq: familyId } }).exec();
+    return users;
+});
+
+export { User };

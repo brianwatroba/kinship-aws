@@ -60,4 +60,11 @@ const TopicSchema = new dynamoose.Schema(
     },
 );
 
-export const Topic = dynamoose.model('Topics', TopicSchema);
+const Topic = dynamoose.model('Topics', TopicSchema);
+
+Topic.methods.set('getActive', async (familyId) => {
+    const [current] = await Topic.query('familyId').eq(familyId).sort('descending').limit(1).exec();
+    return current;
+});
+
+export { Topic };

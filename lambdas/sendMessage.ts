@@ -11,7 +11,6 @@ export const sendMessageHandler = async (event: SQSEvent): Promise<APIGatewayPro
 
         const { text, to } = JSON.parse(event.Records[0].body);
 
-        // TODO wrap my own function here?
         const { status } = await twilioClient.messages.create({
             body: text,
             from: TWILIO_CONFIG.PHONE_NUMBERS.KINSHIP,
@@ -21,7 +20,6 @@ export const sendMessageHandler = async (event: SQSEvent): Promise<APIGatewayPro
         const sentSuccess = ['queued', 'sending', 'sent'].includes(status);
         if (!sentSuccess) throw new Error(`Failed to send twilio text. Status: ${status}`);
 
-        // TODO: this should be sending in format twilio wants, standard message object for twilio
         return {
             statusCode: 200,
             body: JSON.stringify({
