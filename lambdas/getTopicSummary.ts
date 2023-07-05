@@ -1,7 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { Topic } from '../models/Topic';
-import { Family } from '../models/Family';
-import { User } from '../models/User';
+import { Topic, Family, User } from '../models/index';
 
 export const getTopicSummaryHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {

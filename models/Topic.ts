@@ -41,12 +41,12 @@ const TopicSchema = new dynamoose.Schema(
             default: [],
         },
         participants: {
-            type: Array,
+            type: Set,
             schema: [String],
             required: true,
         },
         whoHasAnswered: {
-            type: Array,
+            type: Set,
             schema: [String],
             default: [],
         },
@@ -62,7 +62,7 @@ const TopicSchema = new dynamoose.Schema(
 
 const Topic = dynamoose.model('Topics', TopicSchema);
 
-Topic.methods.set('getActive', async (familyId) => {
+Topic.methods.set('getLatest', async (familyId) => {
     const [current] = await Topic.query('familyId').eq(familyId).sort('descending').limit(1).exec();
     return current;
 });

@@ -1,8 +1,7 @@
 import { APIGatewayProxyResult, SQSEvent } from 'aws-lambda';
 import { sendSQSMessage } from '../utils/sqs';
 import { SQS_CONFIG } from '../config/constants';
-import { User } from '../models/User';
-import { Topic } from '../models/Topic';
+import { User, Topic } from '../models/index';
 
 export const startTopicHandler = async (event: SQSEvent): Promise<APIGatewayProxyResult> => {
     try {
