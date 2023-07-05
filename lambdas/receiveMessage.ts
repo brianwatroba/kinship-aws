@@ -1,18 +1,18 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
 import { parseUrlEncoded } from '../utils/common';
 import { TwilioWebhookEvent } from '../__tests__/fixtures/events';
-import { SQS_SEND_MESSAGE_QUEUE_URL } from '../config/constants';
-import { sendMessage } from '../utils/sqs';
+import { SQS_CONFIG, CLIENT_CONFIG } from '../config/constants';
+import { sendSQSMessage } from '../utils/sqs';
 import { User } from '../models/User';
 import { Topic } from '../models/Topic';
-import { STANDARD_RESPONSES } from '../config/constants';
+import { RESPONSES } from '../constants/responses';
 
 export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<APIGatewayProxyResult> => {
     try {
         // !TODO: verify message integrity
 
         const { body } = event;
-        if (body === null || body === undefined) throw new Error('No body in event');
+        if (!body) throw new Error('No body in event');
         const parsedBody = parseUrlEncoded(body);
         const phoneNumber = `${parsedBody.From.replace(' ', '+')}`;
         const text = parsedBody.Body;
@@ -22,8 +22,8 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
         const [topic] = await Topic.query('familyId').eq(user.familyId).sort('descending').limit(1).exec();
 
         if (topic.completed) {
-            await sendMessage({
-                queueUrl: SQS_SEND_MESSAGE_QUEUE_URL,
+            await sendSQSMessage({
+                queueUrl: SQS_CONFIG.URLS.SEND_MESSAGE,
                 payload: {
                     to: user.phoneNumber,
                     text: `Today's topic is completed! No more answers are being accepted.`,
@@ -68,29 +68,29 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
         const answeredProportion = `${topic.whoHasAnswered.length}/${topic.participants.length} 👪`;
 
         // confirm message
-        await sendMessage({
-            queueUrl: SQS_SEND_MESSAGE_QUEUE_URL,
+        await sendSQSMessage({
+            queueUrl: SQS_CONFIG.URLS.SEND_MESSAGE,
             payload: {
                 to: user.phoneNumber,
-                text: `${STANDARD_RESPONSES.RESPONSE_SAVED} | ${answeredProportion}`,
+                text: `${RESPONSES.SAVED} | ${answeredProportion}`,
             },
         });
 
         if (allAnswered) {
             const familyMembers = await User.query({ familyId: { eq: user.familyId } }).exec();
 
-            const summaryLink = `https://main.d3ql2zjyjkibh4.amplifyapp.com/summaries/${topic.id}`;
+            const summaryLink = `${CLIENT_CONFIG.URLS.TOPIC_ID}${topic.id}`;
 
-            const promises = familyMembers.map((user: Record<string, string>) => {
+            const sendMessagePromises = familyMembers.map((user: Record<string, string>) => {
                 console.log('inside loop, user', user);
                 const payload = {
                     to: user.phoneNumber,
                     text: `Answers are in! Today's summary: ${summaryLink}`,
                 };
-                return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
+                return sendSQSMessage({ queueUrl: SQS_CONFIG.URLS.SEND_MESSAGE, payload });
             });
 
-            await Promise.all(promises);
+            await Promise.all(sendMessagePromises);
         }
 
         return {

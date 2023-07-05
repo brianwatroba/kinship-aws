@@ -1,6 +1,7 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { sendMessage } from '../utils/sqs';
+import { sendSQSMessage } from '../utils/sqs';
 import { SQS_SEND_MESSAGE_QUEUE_URL } from '../config/constants';
+import { SQS_CONFIG } from '../config/constants';
 import { Family } from '../models/Family';
 import { Topic } from '../models/Topic';
 import { User } from '../models/User';
@@ -30,8 +31,8 @@ export const triggerTopicReminderHandler = async (event: ScheduledEvent): Promis
             const answeredProportion = `${topic.whoHasAnswered.length}/${topic.participants.length} 👪`;
 
             const promises = hasNotAnswered.map((user: Record<string, string>) => {
-                return sendMessage({
-                    queueUrl: SQS_SEND_MESSAGE_QUEUE_URL,
+                return sendSQSMessage({
+                    queueUrl: SQS_CONFIG.URLS.SEND_MESSAGE,
                     payload: {
                         to: user.phoneNumber,
                         text: `Your fam is waiting for you! | ${answeredProportion} have answered.\n\nPrompt: "${topic.prompt}"`,

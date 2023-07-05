@@ -1,7 +1,7 @@
 import { sqsClient } from '../config/clients';
 import { SendMessageCommand } from '@aws-sdk/client-sqs';
 
-export const sendMessage = async (params: { queueUrl: string; payload: object }): Promise<string> => {
+export const sendSQSMessage = async (params: { queueUrl: string; payload: object }): Promise<string> => {
     const { queueUrl, payload } = params;
     const messageParams = {
         QueueUrl: queueUrl,
@@ -12,10 +12,8 @@ export const sendMessage = async (params: { queueUrl: string; payload: object })
 
     const res = await sqsClient.send(command);
 
-    console.log('res', res);
-
-    if (!res) throw new Error('Failed to send message');
-    if (!res.MessageId) throw new Error('Failed to send message');
+    if (!res) throw new Error('Failed to send sqs message');
+    if (!res.MessageId) throw new Error('Failed to send sqs message: no message id');
 
     return res.MessageId;
 };

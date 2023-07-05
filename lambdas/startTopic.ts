@@ -1,14 +1,15 @@
 import { APIGatewayProxyResult, SQSEvent } from 'aws-lambda';
-import { sendMessage } from '../utils/sqs';
-import { SQS_SEND_MESSAGE_QUEUE_URL } from '../config/constants';
+import { sendSQSMessage } from '../utils/sqs';
+import { SQS_CONFIG } from '../config/constants';
 import { User } from '../models/User';
 import { Topic } from '../models/Topic';
 
 export const startTopicHandler = async (event: SQSEvent): Promise<APIGatewayProxyResult> => {
     try {
-        if (event.Records.length > 1) throw new Error('Too many records in SQS event! Should only be one');
+        if (event.Records.length > SQS_CONFIG.MAX_MESSAGE_SIZE)
+            throw new Error('Too many records in SQS event! Should only be one');
 
-        const record = event.Records[0];
+        const [record] = event.Records;
         const { familyId, prompt } = JSON.parse(record.body);
 
         const familyMembers = await User.query({ familyId: { eq: familyId } }).exec();
@@ -26,7 +27,7 @@ export const startTopicHandler = async (event: SQSEvent): Promise<APIGatewayProx
                 to: user.phoneNumber,
                 text: prompt,
             };
-            return sendMessage({ queueUrl: SQS_SEND_MESSAGE_QUEUE_URL, payload });
+            return sendSQSMessage({ queueUrl: SQS_CONFIG.URLS.SEND_MESSAGE, payload });
         });
 
         //TODO: handle partial failures? Batch insert?

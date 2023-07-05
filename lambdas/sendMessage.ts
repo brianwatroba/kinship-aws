@@ -1,36 +1,33 @@
 import { APIGatewayProxyResult, SQSEvent } from 'aws-lambda';
-import { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER } from '../config/constants';
+import { TWILIO_CONFIG, SQS_CONFIG } from '../config/constants';
 import { Twilio } from 'twilio';
 
-const twilioClient = new Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+const twilioClient = new Twilio(TWILIO_CONFIG.ACCOUNT_SID, TWILIO_CONFIG.AUTH_TOKEN);
 
 export const sendMessageHandler = async (event: SQSEvent): Promise<APIGatewayProxyResult> => {
     try {
-        if (event.Records.length > 1) throw new Error('Too many records in SQS event! Should only be one');
+        if (event.Records.length > SQS_CONFIG.MAX_MESSAGE_SIZE)
+            throw new Error('Too many records in SQS event! Should only be one');
 
-        const record = event.Records[0];
-        const { text, to } = JSON.parse(record.body);
+        const { text, to } = JSON.parse(event.Records[0].body);
 
-        const res = await twilioClient.messages.create({
+        // TODO wrap my own function here?
+        const { status } = await twilioClient.messages.create({
             body: text,
-            from: TWILIO_PHONE_NUMBER,
+            from: TWILIO_CONFIG.PHONE_NUMBERS.KINSHIP,
             to,
         });
 
-        const { status } = res;
+        const sentSuccess = ['queued', 'sending', 'sent'].includes(status);
+        if (!sentSuccess) throw new Error(`Failed to send twilio text. Status: ${status}`);
 
-        const sentSuccess = status === 'queued' || status === 'sending' || status === 'sent';
-
-        if (sentSuccess) {
-            return {
-                statusCode: 200,
-                body: JSON.stringify({
-                    message: `Success! Status: ${status}`,
-                }),
-            };
-        }
-
-        throw new Error(`Failed to send message. Status: ${status}`);
+        // TODO: this should be sending in format twilio wants, standard message object for twilio
+        return {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: `Success! Status: ${status}`,
+            }),
+        };
     } catch (err: any) {
         console.log(err.message);
         return {

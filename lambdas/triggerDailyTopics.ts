@@ -1,50 +1,23 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { sendMessage } from '../utils/sqs';
-import { SQS_START_TOPIC_QUEUE_URL } from '../config/constants';
+import { sendSQSMessage } from '../utils/sqs';
+import { SQS_CONFIG } from '../config/constants';
 import { Family } from '../models/Family';
 import { ScheduledEvent } from 'aws-lambda';
-import { prompts } from '../config/constants';
-import dayjs from 'dayjs';
-
-const getRandomValueInRange = (min: number, max: number): number => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-};
+import { generatePrompt } from '../utils/common';
 
 export const triggerDailyTopicsHandler = async (event: ScheduledEvent): Promise<APIGatewayProxyResult> => {
     try {
         const allFamilies = await Family.scan().exec();
-
-        const dayOfWeek = dayjs().day();
-        let promptsByDay;
-
-        if (dayOfWeek === 0) {
-            promptsByDay = prompts.heavy;
-        } else if (dayOfWeek === 5) {
-            promptsByDay = prompts.medium;
-        } else if (dayOfWeek === 2) {
-            promptsByDay = prompts.light;
-        } else {
-            return {
-                statusCode: 200,
-                body: JSON.stringify({
-                    message: `Success!`,
-                }),
-            };
-        }
-
-        const randIndex = getRandomValueInRange(0, promptsByDay.length - 1);
-        if (promptsByDay === undefined) throw new Error('No prompts for today');
-        const prompt = promptsByDay[randIndex];
-
-        const promises = allFamilies.map((family: Record<string, string>) => {
+        const prompt = generatePrompt();
+        const sentMessagesPromises = allFamilies.map((family: Record<string, string>) => {
             const payload = {
                 familyId: family.id,
                 prompt,
             };
-            return sendMessage({ queueUrl: SQS_START_TOPIC_QUEUE_URL, payload });
+            return sendSQSMessage({ queueUrl: SQS_CONFIG.URLS.START_TOPIC, payload });
         });
 
-        await Promise.all(promises);
+        await Promise.all(sentMessagesPromises);
 
         return {
             statusCode: 200,
