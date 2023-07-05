@@ -81,7 +81,7 @@ const sendTopicSummary = async (topicId: string, familyId: string) => {
             to: user.phoneNumber,
             text: `Answers are in! Today's summary: ${summaryLink}`,
         };
-        return sendSQSMessage({ queueUrl: SQS_CONFIG.URLS.SEND_MESSAGE, payload });
+        return sendSQSMessage({ queueUrl: SQS_CONFIG.URLS.SEND_MESSAGE, payload, delay: 120 });
     });
 
     await Promise.all(sendMessagePromises);

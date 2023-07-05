@@ -54,6 +54,10 @@ const TopicSchema = new dynamoose.Schema(
             type: Boolean,
             default: false,
         },
+        summarySent: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

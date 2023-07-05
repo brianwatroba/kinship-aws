@@ -1,11 +1,16 @@
 import { sqsClient } from '../config/clients';
 import { SendMessageCommand } from '@aws-sdk/client-sqs';
 
-export const sendSQSMessage = async (params: { queueUrl: string; payload: object }): Promise<string> => {
-    const { queueUrl, payload } = params;
+export const sendSQSMessage = async (params: {
+    queueUrl: string;
+    payload: object;
+    delay?: number;
+}): Promise<string> => {
+    const { queueUrl, payload, delay } = params;
     const messageParams = {
         QueueUrl: queueUrl,
         MessageBody: JSON.stringify(payload),
+        DelaySeconds: delay,
     };
 
     const command = new SendMessageCommand(messageParams);
