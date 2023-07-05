@@ -1,26 +1,66 @@
 import { SQSEvent, APIGatewayProxyEvent, ScheduledEvent } from 'aws-lambda';
-import { TWILIO_PHONE_NUMBER } from '../../config/constants';
+import { TWILIO_CONFIG } from '../../config/constants';
 
 // SendMessageFunction
+
+const baseRecordData = {
+    messageId: '12345',
+    receiptHandle: 'abcde',
+    attributes: {
+        ApproximateReceiveCount: '1',
+        SentTimestamp: '123456789',
+        SenderId: '123456789',
+        ApproximateFirstReceiveTimestamp: '123456789',
+    },
+    messageAttributes: {},
+    md5OfBody: '',
+    eventSource: '',
+    eventSourceARN: '',
+    awsRegion: '',
+};
 
 export const sendMessageSqsEvents: { [key: string]: SQSEvent } = {
     valid: {
         Records: [
             {
-                messageId: '12345',
-                receiptHandle: 'abcde',
-                body: JSON.stringify({ to: '+18105556666', text: 'hello world', from: TWILIO_PHONE_NUMBER }),
-                attributes: {
-                    ApproximateReceiveCount: '1',
-                    SentTimestamp: '123456789',
-                    SenderId: '123456789',
-                    ApproximateFirstReceiveTimestamp: '123456789',
-                },
-                messageAttributes: {},
-                md5OfBody: '',
-                eventSource: '',
-                eventSourceARN: '',
-                awsRegion: '',
+                ...baseRecordData,
+                body: JSON.stringify({
+                    to: '+12125678901', // valid via Twilio
+                    text: 'valid phone number message',
+                    from: TWILIO_CONFIG.PHONE_NUMBERS.KINSHIP,
+                }),
+            },
+        ],
+    },
+    invalid: {
+        Records: [
+            {
+                ...baseRecordData,
+                body: JSON.stringify({
+                    to: '+15005550001', // invalid via Twilio
+                    text: 'invalid phone number message',
+                    from: TWILIO_CONFIG.PHONE_NUMBERS.KINSHIP,
+                }),
+            },
+        ],
+    },
+    tooManyRecords: {
+        Records: [
+            {
+                ...baseRecordData,
+                body: JSON.stringify({
+                    to: '+12125678901', // valid via Twilio
+                    text: 'valid phone number message',
+                    from: TWILIO_CONFIG.PHONE_NUMBERS.KINSHIP,
+                }),
+            },
+            {
+                ...baseRecordData,
+                body: JSON.stringify({
+                    to: '+12125678901', // valid via Twilio
+                    text: 'valid phone number message',
+                    from: TWILIO_CONFIG.PHONE_NUMBERS.KINSHIP,
+                }),
             },
         ],
     },

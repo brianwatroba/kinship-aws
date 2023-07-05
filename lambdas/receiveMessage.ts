@@ -11,6 +11,13 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
     try {
         // !TODO: verify message integrity
 
+        // parse body
+
+        // get user
+        // get topic
+
+        //
+
         const { body } = event;
         if (!body) throw new Error('No body in event');
         const parsedBody = parseUrlEncoded(body);
@@ -82,7 +89,6 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
             const summaryLink = `${CLIENT_CONFIG.URLS.TOPIC_ID}${topic.id}`;
 
             const sendMessagePromises = familyMembers.map((user: Record<string, string>) => {
-                console.log('inside loop, user', user);
                 const payload = {
                     to: user.phoneNumber,
                     text: `Answers are in! Today's summary: ${summaryLink}`,
@@ -92,6 +98,8 @@ export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<
 
             await Promise.all(sendMessagePromises);
         }
+
+        // TODO: send correct response to Twilio to handle
 
         return {
             statusCode: 200,

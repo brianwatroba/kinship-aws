@@ -53,4 +53,3 @@ export const generatePrompt = () => {
     if (!possiblePrompts) throw new Error('No prompts for today');
     return possiblePrompts[randIndex];
 };
-c;

@@ -1,6 +1,5 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
 import { sendSQSMessage } from '../utils/sqs';
-import { SQS_SEND_MESSAGE_QUEUE_URL } from '../config/constants';
 import { SQS_CONFIG } from '../config/constants';
 import { Family } from '../models/Family';
 import { Topic } from '../models/Topic';

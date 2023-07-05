@@ -18,12 +18,12 @@ const topic = {
     familyId,
     prompt,
     responsesLeft: family.length,
-    createdAt: 1682338600185,
-    updatedAt: 1682338600185,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
 };
 const sendMessageResponse = { MessageId: '123' };
 
-describe('startTopics()', () => {
+describe('startTopic()', () => {
     beforeEach(() => {
         jest.restoreAllMocks();
         mockSqsClient.reset();
@@ -33,7 +33,6 @@ describe('startTopics()', () => {
     });
 
     it('Success: returns 200 with valid event', async () => {
-        console.log('brian', brian);
         const event = startTopicSqsQueueEvents.valid;
         event.Records[0].body = JSON.stringify({
             familyId,
