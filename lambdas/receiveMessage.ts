@@ -6,14 +6,13 @@ import { parseUrlEncoded } from '../utils/common';
 import { validateTwilioRequest } from '../utils/twilio';
 import { User, Topic } from '../models/index';
 import { RESPONSES } from '../constants/responses';
-import { AnyItem } from 'dynamoose/dist/Item';
 
 export const receiveMessageHandler = async (event: TwilioWebhookEvent): Promise<APIGatewayProxyResult> => {
     try {
         validateTwilioRequest(event);
         const { phoneNumber, text, media } = parseWebhookBody(event);
 
-        const user: AnyItem = await User.get(phoneNumber);
+        const user = await User.get(phoneNumber);
         const topic = await Topic.getLatest(user.familyId);
 
         // TODO: validate there is an active topic
@@ -77,11 +76,12 @@ const sendTopicSummary = async (topicId: string, familyId: string) => {
     const summaryLink = `${CLIENT_CONFIG.URLS.TOPIC_ID}${topicId}`;
 
     const sendMessagePromises = familyMembers.map((user: Record<string, string>) => {
+        const delay = 120;
         const payload = {
             to: user.phoneNumber,
             text: `Answers are in! Today's summary: ${summaryLink}`,
         };
-        return sendSQSMessage({ queueUrl: SQS_CONFIG.URLS.SEND_MESSAGE, payload, delay: 120 });
+        return sendSQSMessage({ queueUrl: SQS_CONFIG.URLS.SEND_MESSAGE, payload, delay });
     });
 
     await Promise.all(sendMessagePromises);
