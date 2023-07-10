@@ -1,24 +1,19 @@
 import dynamoose from 'dynamoose';
 import { v4 as uuidv4 } from 'uuid';
+import { Item } from 'dynamoose/dist/Item';
 
-const ResponseSchema = new dynamoose.Schema({
-    user: {
-        type: String,
-        required: true,
-    },
-    text: {
-        type: String,
-        default: '',
-    },
-    media: {
-        type: String,
-        default: '',
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+export interface TopicModel extends Item {
+    id: string;
+    familyId: string;
+    prompt: string;
+    participants: string[];
+    whoHasAnswered: string[];
+    whoHasNotAnswered: string[];
+    isCompleted: boolean;
+    isSummarySent: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
 const TopicSchema = new dynamoose.Schema(
     {
@@ -35,11 +30,6 @@ const TopicSchema = new dynamoose.Schema(
             type: String,
             required: true,
         },
-        responses: {
-            type: Array,
-            schema: [ResponseSchema],
-            default: [],
-        },
         participants: {
             type: Array,
             schema: [String],
@@ -50,7 +40,16 @@ const TopicSchema = new dynamoose.Schema(
             schema: [String],
             default: [],
         },
-        completed: {
+        whoHasNotAnswered: {
+            type: Array,
+            schema: [String],
+            default: [],
+        },
+        isCompleted: {
+            type: Boolean,
+            default: false,
+        },
+        isSummarySent: {
             type: Boolean,
             default: false,
         },
@@ -60,4 +59,4 @@ const TopicSchema = new dynamoose.Schema(
     },
 );
 
-export const Topic = dynamoose.model('Topics', TopicSchema);
+export const Topic = dynamoose.model<TopicModel>('Topics', TopicSchema);

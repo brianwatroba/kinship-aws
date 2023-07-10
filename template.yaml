@@ -235,8 +235,33 @@ Resources:
                   AttributeType: 'S'
                 - AttributeName: 'createdAt'
                   AttributeType: 'N'
+                - AttributeName: 'id'
+                  AttributeType: 'S'
             KeySchema:
                 - AttributeName: 'familyId'
+                  KeyType: 'HASH'
+                - AttributeName: 'createdAt'
+                  KeyType: 'RANGE'
+            BillingMode: 'PAY_PER_REQUEST'
+            GlobalSecondaryIndexes:
+                - IndexName: 'IdIndex' # Choose a suitable name for the GSI
+                  KeySchema:
+                      - AttributeName: 'id'
+                        KeyType: 'HASH'
+                  Projection:
+                      ProjectionType: 'ALL' # Modify the projection type as needed
+
+    PostsTable:
+        Type: 'AWS::DynamoDB::Table'
+        Properties:
+            TableName: 'Posts'
+            AttributeDefinitions:
+                - AttributeName: 'topicId'
+                  AttributeType: 'S'
+                - AttributeName: 'createdAt'
+                  AttributeType: 'N'
+            KeySchema:
+                - AttributeName: 'topicId'
                   KeyType: 'HASH'
                 - AttributeName: 'createdAt'
                   KeyType: 'RANGE'
@@ -258,19 +283,6 @@ Resources:
         Type: AWS::SQS::Queue
         Properties:
             QueueName: send-message-queue
-
-    StartTopicQueue:
-        Type: AWS::SQS::Queue
-        Properties:
-            QueueName: start-topic-queue
-            RedrivePolicy:
-                deadLetterTargetArn: !GetAtt StartTopicDeadLetterQueue.Arn
-                maxReceiveCount: 3
-
-    StartTopicDeadLetterQueue:
-        Type: AWS::SQS::Queue
-        Properties:
-            QueueName: start-topic-dead-letter-queue
 
     ApplicationResourceGroup:
         Type: AWS::ResourceGroups::Group

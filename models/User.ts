@@ -1,5 +1,18 @@
 import dynamoose from 'dynamoose';
 import { v4 as uuidv4 } from 'uuid';
+import { Item } from 'dynamoose/dist/Item';
+
+export interface UserModel extends Item {
+    id: string;
+    phoneNumber: string;
+    familyId: string;
+    firstName: string;
+    lastName: string;
+    image: string;
+    paused: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
 const UserSchema = new dynamoose.Schema(
     {
@@ -39,4 +52,6 @@ const UserSchema = new dynamoose.Schema(
     { timestamps: true },
 );
 
-export const User = dynamoose.model('Users', UserSchema);
+const User = dynamoose.model<UserModel>('Users', UserSchema);
+
+export { User };
