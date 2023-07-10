@@ -1,6 +1,17 @@
 import dynamoose from 'dynamoose';
 import { v4 as uuidv4 } from 'uuid';
 
+import { Item } from 'dynamoose/dist/Item';
+
+interface FamilyModel extends Item {
+    id: string;
+    name: string;
+    image: string;
+    paused: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 const FamilySchema = new dynamoose.Schema(
     {
         id: {
@@ -24,4 +35,4 @@ const FamilySchema = new dynamoose.Schema(
     { timestamps: true },
 );
 
-export const Family = dynamoose.model('Families', FamilySchema);
+export const Family = dynamoose.model<FamilyModel>('Families', FamilySchema);

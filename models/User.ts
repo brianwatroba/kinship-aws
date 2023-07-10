@@ -1,5 +1,18 @@
 import dynamoose from 'dynamoose';
 import { v4 as uuidv4 } from 'uuid';
+import { Item } from 'dynamoose/dist/Item';
+
+export interface UserModel extends Item {
+    id: string;
+    phoneNumber: string;
+    familyId: string;
+    firstName: string;
+    lastName: string;
+    image: string;
+    paused: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
 const UserSchema = new dynamoose.Schema(
     {
@@ -39,11 +52,6 @@ const UserSchema = new dynamoose.Schema(
     { timestamps: true },
 );
 
-const User = dynamoose.model('Users', UserSchema);
-
-User.methods.set('getAllByFamily', async (familyId) => {
-    const users = await User.query({ familyId: { eq: familyId } }).exec();
-    return users;
-});
+const User = dynamoose.model<UserModel>('Users', UserSchema);
 
 export { User };
